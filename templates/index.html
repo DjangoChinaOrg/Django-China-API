@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Django 中文社区</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+</head>
+<body class="body">
+
+<div class="header">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Django 中文社区</a>
+        </div>
+    </div>
+
+</div>
+<div class="body-content container container-fluid row">
+    <div class="homepage">
+        <div class="main">
+            <h1>Django 中文社区即将上线</h1>
+            <div class="progress progress-striped">
+                <div class="progress-bar progress-bar-success" role="progressbar"
+                     aria-valuemin="0" aria-valuemax="100"
+                     style="width: 70%;">
+                </div>
+
+            </div>
+            <p class="github-wrapper">
+                <a class="button gray has-icon github-button" href="https://github.com/DjangoChinaOrg" target="_blank">GITHUB</a>
+            </p>
+
+            <div class="donate row">
+                <div class="col-6">
+                    <img src="{% static 'img/QRCode.png' %}">
+                </div>
+                <div class="col-6 wrapper">
+                    <span>欢迎捐助<br>为社区发展贡献一份力</span>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="info">
+            <div class="dynamic">
+                <h3>动态</h3>
+                <ul>
+                    {% for post in post_list %}
+                    <li>
+                        <a href="{{ post.get_absolute_url }}" target="_blank">{{ post.title }}</a>
+                    </li>
+                    {% empty %}
+                    <li>
+                        <a class="disable">{{ 暂无动态 }}</a>
+                    </li>
+                    {% endfor %}
+
+                </ul>
+                <a href="{% url 'home:list'%}" target="_blank">查看全部>>></a>
+            </div>
+            <div class="support">
+                <h3>捐助信息</h3>
+                <ul>
+
+                    <li>
+                        <span>XXX捐助了XXX元</span>
+                    </li>
+
+                    <li>
+                        <span>XXX捐助了XXX元</span>
+                    </li>
+
+                    <li>
+                        <span>XXX捐助了XXX元</span>
+                    </li>
+
+                    <li>
+                        <span>XXX捐助了XXX元</span>
+                    </li>
+
+                    <li>
+                        <span>XXX捐助了XXX元</span>
+                    </li>
+
+                </ul>
+                <a href="#" target="_blank">查看全部>>></a>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+<!--Footer-->
+<footer class="page-footer font-small blue pt-4 mt-4">
+
+    <!--Footer-->
+    <div class="container-fluid text-center text-md-left text-xl-left">
+        <div class="row">
+
+
+            <div class="col-md-6 col-xl-6 text-md-left text-xl-left text-sm-left">
+                <h5 class="text-uppercase">Django 中文社区</h5>
+            </div>
+
+            <div class="col-md-6 col-xl-6">
+                <!--<h5 class="text-uppercase">Links</h5>-->
+                <!--<ul class="list-unstyled">-->
+                <!--<li><a href="#!">Link 1</a></li>-->
+                <!--<li><a href="#!">Link 2</a></li>-->
+                <!--<li><a href="#!">Link 3</a></li>-->
+                <!--<li><a href="#!">Link 4</a></li>-->
+                <!--</ul>-->
+            </div>
+
+        </div>
+    </div>
+    <!--/.Footer Links-->
+
+    <!--Copyright-->
+    <!--<div class="footer-copyright py-3 text-center">-->
+    <!--<div class="container-fluid">-->
+    <!--© 2015 Copyright: <a href=""></a>-->
+
+    <!--</div>-->
+    <!--</div>-->
+    <!--/.Copyright-->
+
+</footer>
+<!--/.Footer-->
+
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+</html>

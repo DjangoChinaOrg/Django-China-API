@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Django 中文社区</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body class="body">
+
+<div class="header">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Django 中文社区</a>
+        </div>
+    </div>
+</div>
+<div class="body-content container container-fluid row">
+    <div class="list">
+        <div class="post-list">
+            <div class="row">
+                <div class="col-12">
+                    {% for post in post_list %}
+                    <article class="post">
+                        <div class="entry-header">
+                            <h1 class="entry-title">
+                                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                            </h1>
+                            <div class="entry-meta">
+                                    <span class="post-date">
+                                        <time class="entry-date" datetime="{{ post.created_time }}">{{ post.created_time }}</time>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span class="post-read">{{ post.views_num}} Reads</span>
+                            </div>
+                        </div>
+                        <div class="entry-content clearfix">
+                            <p>{{ post.excerpt }}</p>
+                            <div class="read-more cl-effect-14">
+                                <a href="{{ post.get_absolute_url }}" class="more-link">继续阅读<span
+                                        class="meta-nav">→</span></a>
+                            </div>
+                        </div>
+                    </article>
+                    {% empty %}
+                    <h2 class="no-post">暂无动态！</h2>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+        <!--<div class="d-flex justify-content-center page">-->
+        <!--<nav aria-label="Page navigation" class="text-center">-->
+        <!--<ul class="pagination">-->
+        <!--<li class="page-item  disabled">-->
+        <!--<a class="page-link" href="#" aria-label="Previous">-->
+        <!--<span aria-hidden="true">&laquo;</span>-->
+        <!--</a>-->
+        <!--</li>-->
+        <!--<li class="page-item"><a class="page-link" href="#">1</a></li>-->
+        <!--<li class="page-item"><a class="page-link" href="#">2</a></li>-->
+        <!--<li class="page-item"><a class="page-link" href="#">3</a></li>-->
+        <!--<li class="page-item">-->
+        <!--<a class="page-link" href="#" aria-label="Next">-->
+        <!--<span aria-hidden="true">&raquo;</span>-->
+        <!--</a>-->
+        <!--</li>-->
+        <!--</ul>-->
+        <!--</nav>-->
+        <!--</div>-->
+    </div>
+
+
+</div>
+<hr>
+
+<!--Footer-->
+<footer class="page-footer font-small blue pt-4 mt-4">
+
+    <!--Footer-->
+    <div class="container-fluid text-center text-md-left text-xl-left">
+        <div class="row">
+
+
+            <div class="col-md-6 col-xl-6 text-md-left text-xl-left text-sm-left">
+                <h5 class="text-uppercase">Django 中文社区</h5>
+            </div>
+
+            <div class="col-md-6 col-xl-6">
+                <!--<h5 class="text-uppercase">Links</h5>-->
+                <!--<ul class="list-unstyled">-->
+                <!--<li><a href="#!">Link 1</a></li>-->
+                <!--<li><a href="#!">Link 2</a></li>-->
+                <!--<li><a href="#!">Link 3</a></li>-->
+                <!--<li><a href="#!">Link 4</a></li>-->
+                <!--</ul>-->
+            </div>
+
+        </div>
+    </div>
+    <!--/.Footer Links-->
+
+    <!--Copyright-->
+    <!--<div class="footer-copyright py-3 text-center">-->
+    <!--<div class="container-fluid">-->
+    <!--© 2015 Copyright: <a href=""></a>-->
+
+    <!--</div>-->
+    <!--</div>-->
+    <!--/.Copyright-->
+
+</footer>
+<!--/.Footer-->
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+</html>

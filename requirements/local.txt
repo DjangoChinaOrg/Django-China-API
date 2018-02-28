@@ -1,1 +1,6 @@
 -r base.txt
+
+Django==1.11.10
+Markdown==2.6.11
+Pygments==2.2.0
+pytz==2018.3
