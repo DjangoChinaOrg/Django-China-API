@@ -34,7 +34,7 @@ a:hover {
 
 .container-fluid {
     margin: 0 auto;
-    max-width: 1400px;
+    width: 1400px;
     padding: 0 4.2%;
 }
 
@@ -50,17 +50,20 @@ a:hover {
 
 .container {
     margin: 0 auto;
-    max-width: 1400px;
+    /*max-width: 1400px;*/
     padding: 100px 0 40px 0;
 }
 
 /*主页*/
+.homepage{
+    min-width: 1400px;
+}
 .homepage .main {
-    width: 80%;
+    /*width: 80%;*/
     border-right: 1px solid #ddd;
     padding-left: 0;
-    padding-right: 4%;
-    float: left;
+    /*padding-right: 4%;*/
+    /*float: left;*/
 }
 
 .main {
@@ -70,14 +73,14 @@ a:hover {
 }
 
 .main h1 {
-    margin-bottom: 100px;
+    margin-bottom: 70px;
 }
 
 .main .progress {
     width: 80%;
     text-align: center;
     margin: 0 auto;
-    margin-bottom: 50px;
+    margin-bottom: 10px;
     color: #0C3C26;
 }
 
@@ -87,7 +90,7 @@ a:hover {
 
 .main .github-wrapper {
     max-width: 400px;
-    margin: 1em auto .5em;
+    margin: 0.5em auto .5em;
     color: #44B78B;
     font-size: 36px;
     font-size: 3.6rem;
@@ -119,8 +122,9 @@ a:hover {
 }
 
 .main .donate img {
-    width: 80%;
-    min-width: 100px;
+    /*width: 80%;*/
+    min-width: 200px;
+    max-width: 200px;
 }
 
 .main .donate span {
@@ -131,16 +135,24 @@ a:hover {
     font-size: 15px;
     font-size: 1.5rem;
 }
+.main .donate a{
+    color: #44B78B
+}
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #44B78B;
+}
 
 .homepage .info {
-    width: 16%;
+    /*width: 16%;*/
+    /*float: right;*/
 }
 
 .info {
     height: auto;
-    float: right;
     border: none;
-    margin: 10px 0 10px 42px;
+    margin: 10px 0 10px 0;
+    padding-left: 4%;
     color: #0C3C26;
 }
 
@@ -153,7 +165,7 @@ a:hover {
     padding-left: 20px;
     padding-bottom: 20px;
     margin-bottom: 20px;
-    border-bottom: 1px solid #ddd;
+    /*border-bottom: 1px solid #ddd;*/
 }
 
 .info ul {

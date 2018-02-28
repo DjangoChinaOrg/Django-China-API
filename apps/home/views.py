@@ -5,13 +5,17 @@ from django.shortcuts import render
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView
 
-from .models import Post
+from .models import Post, ProgressBar
 
 
 def index(request):
     post_list = Post.objects.all().order_by('-created_time')[:5]
-
-    return render(request, 'index.html', context={'post_list': post_list})
+    try:
+        index_progress = ProgressBar.objects.filter(title='index')[0].progress
+    except:
+        index_progress = 70
+    # print(index_progress[0].progress)
+    return render(request, 'index.html', context={'post_list': post_list, 'progress': index_progress})
 
 
 class PostListView(ListView):

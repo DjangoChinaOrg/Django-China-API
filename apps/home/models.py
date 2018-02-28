@@ -30,3 +30,18 @@ class Post(models.Model):
     def increase_views_num(self):
         self.views_num += 1
         self.save(update_fields=['views_num'])
+
+
+class ProgressBar(models.Model):
+    title = models.CharField(max_length=100, blank=False, null=False, unique=True)  # 进度条名称
+
+    progress = models.IntegerField(blank=False, null=False)  # 进度条进程
+
+    remarks = models.CharField(max_length=100)  # 进度条备注
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "进度条"
+        verbose_name_plural = verbose_name
