@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Django 中文社区</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body class="body">
+
+<div class="header">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Django 中文社区</a>
+        </div>
+    </div>
+
+</div>
+<div class="body-content container container-fluid row">
+    <div class="supportpage row">
+        <div class="main float-left col-7">
+            <h1>捐助款项</h1>
+
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">姓名</th>
+                    <th scope="col">金额</th>
+                    <th scope="col">渠道</th>
+                    <th scope="col">时间</th>
+                    <th scope="col">备注</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for support in support_list %}
+                <tr>
+                    <th scope="row">{{ support.name }}</th>
+                    <td>{{ support.money }}元</td>
+                    <td>{{ support.channel }}</td>
+                    <td>
+                        <time class="entry-date" datetime="2017年12月31日 23:29">{{ support.date }}</time>
+                    </td>
+                    <td>{{ support.remarks }}</td>
+                </tr>
+                {% empty %}
+                    <h2 class="no-post">暂无动态！</h2>
+                <tr>
+                  <td colspan="5">暂无捐款信息！</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+        <div class="info float-right col-5">
+            <div class="donate">
+                <div class="bd-example bd-example-tabs">
+                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home"
+                               role="tab" aria-controls="pills-home" aria-selected="true">微信</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
+                               role="tab" aria-controls="pills-profile" aria-selected="false">支付宝</a>
+                        </li>
+
+                    </ul>
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                             aria-labelledby="pills-home-tab">
+                            <img src="{% static 'img/WeChatQRCode.png' %}">
+                        </div>
+                        <div class="tab-pane fade" id="pills-profile" role="tabpanel"
+                             aria-labelledby="pills-profile-tab">
+                            <img src="{% static 'img/ALiPayQRCode.png' %}">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row donate-info">
+                    <h4>欢迎捐助</h4>
+                    <span>为社区发展贡献一份力</span><br>
+                    <span>捐助款项用于购买域名与服务器等基础设施</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!--Footer-->
+<footer class="page-footer font-small blue pt-4 mt-4">
+
+    <!--Footer Links-->
+    <div class="container-fluid text-center text-md-left text-xl-left">
+        <div class="row">
+
+            <!--First column-->
+            <div class="col-md-6 col-xl-6 text-md-left text-xl-left text-sm-left">
+                <h5>Django 中文社区</h5>
+                <!--<p>Here you can use rows and columns here to organize your footer content.</p>-->
+            </div>
+            <!--/.First column-->
+
+            <!--Second column-->
+            <div class="col-md-6 col-xl-6">
+                <!--<h5 class="text-uppercase">Links</h5>-->
+                <!--<ul class="list-unstyled">-->
+                <!--<li><a href="#!">Link 1</a></li>-->
+                <!--<li><a href="#!">Link 2</a></li>-->
+                <!--<li><a href="#!">Link 3</a></li>-->
+                <!--<li><a href="#!">Link 4</a></li>-->
+                <!--</ul>-->
+            </div>
+            <!--/.Second column-->
+        </div>
+    </div>
+    <!--/.Footer Links-->
+
+    <!--Copyright-->
+    <!--<div class="footer-copyright py-3 text-center">-->
+    <!--<div class="container-fluid">-->
+    <!--© 2015 Copyright: <a href="https://mdbootstrap.com/material-design-for-bootstrap/"> MDBootstrap.com </a>-->
+
+    <!--</div>-->
+    <!--</div>-->
+    <!--/.Copyright-->
+
+</footer>
+<!--/.Footer-->
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+</html>
