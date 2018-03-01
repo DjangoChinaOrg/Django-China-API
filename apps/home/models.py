@@ -13,7 +13,7 @@ class Post(models.Model):
 
     excerpt = models.TextField(max_length=200, blank=True, verbose_name='文章摘要')  # 文章摘要
 
-    author = models.ForeignKey(User,verbose_name='作者')
+    author = models.CharField(max_length=100, verbose_name='作者')  # 作者
 
     views_num = models.PositiveIntegerField(default=0,verbose_name='阅读数量')  # 阅读数量
 
