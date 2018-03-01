@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView
 
-from .models import Post, ProgressBar
+from .models import Post, ProgressBar, Support
 
 
 def index(request):
@@ -14,8 +14,9 @@ def index(request):
         index_progress = ProgressBar.objects.filter(title='index')[0].progress
     except:
         index_progress = 70
-    # print(index_progress[0].progress)
-    return render(request, 'index.html', context={'post_list': post_list, 'progress': index_progress})
+    support_list = Support.objects.order_by('-date')[:5]
+    dic = {'post_list': post_list, 'progress': index_progress, 'support_list': support_list}
+    return render(request, 'index.html', context=dic)
 
 
 class PostListView(ListView):
@@ -28,7 +29,6 @@ class PostListView(ListView):
 
 
 class PostDetailView(DetailView):
-
     model = Post
     template_name = 'post.html'
     context_object_name = 'post'
@@ -42,11 +42,19 @@ class PostDetailView(DetailView):
         # 覆写 get_object 方法的目的是因为需要对 post 的 body 值进行渲染
         post = super(PostDetailView, self).get_object(queryset=None)
         post.content = markdown.markdown(post.content,
-                                      extensions=[
-                                          'markdown.extensions.extra',
-                                          'markdown.extensions.codehilite',
-                                          'markdown.extensions.toc',
-                                          TocExtension(slugify=slugify),
-                                      ])
+                                         extensions=[
+                                             'markdown.extensions.extra',
+                                             'markdown.extensions.codehilite',
+                                             'markdown.extensions.toc',
+                                             TocExtension(slugify=slugify),
+                                         ])
         return post
 
+
+class SupportView(ListView):
+    model = Support
+    template_name = 'support.html'
+    context_object_name = 'support_list'
+
+    def get_queryset(self):
+        return super(SupportView, self).get_queryset().order_by('-date')

@@ -111,29 +111,18 @@
             <div class="support">
                 <h3>捐助信息</h3>
                 <ul>
-
+                    {% for support in support_list %}
                     <li>
-                        <span>XXX捐助了XXX元</span>
+                        <span>{{ support.name }}捐助了{{ support.money }}元</span>
                     </li>
-
+                    {% empty %}
                     <li>
-                        <span>XXX捐助了XXX元</span>
+                        <a class="disable">{{ 暂无捐款信息 }}</a>
                     </li>
-
-                    <li>
-                        <span>XXX捐助了XXX元</span>
-                    </li>
-
-                    <li>
-                        <span>XXX捐助了XXX元</span>
-                    </li>
-
-                    <li>
-                        <span>XXX捐助了XXX元</span>
-                    </li>
+                    {% endfor %}
 
                 </ul>
-                <a href="#" target="_blank">查看全部>>></a>
+                <a href="{% url 'home:support'%}" target="_blank">查看全部>>></a>
             </div>
 
 
