@@ -3,7 +3,7 @@
 <head>
     {% load staticfiles %}
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Django 中文社区</title>
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -32,10 +32,10 @@
                 </div>
 
             </div>
-            <h4>完成度&nbsp;&nbsp;&nbsp;{{ progress }}%</h4>
+            <h4>项目进度&nbsp;&nbsp;&nbsp;{{ progress }}%</h4>
             <p class="github-wrapper">
                 <a class="button gray has-icon github-button" href="https://github.com/DjangoChinaOrg/django-china.org"
-                   target="_blank">GITHUB</a>
+                   target="_blank">查看项目仓库</a>
             </p>
 
             <div class="donate">
@@ -101,7 +101,7 @@
                     </li>
                     {% empty %}
                     <li>
-                        <a class="disable">{{ 暂无动态 }}</a>
+                        <a class="disable">暂无动态</a>
                     </li>
                     {% endfor %}
 
@@ -117,7 +117,7 @@
                     </li>
                     {% empty %}
                     <li>
-                        <a class="disable">{{ 暂无捐款信息 }}</a>
+                        <a class="disable">暂无捐助</a>
                     </li>
                     {% endfor %}
 
