@@ -54,7 +54,7 @@ class Support(models.Model):
         (2, "支付宝"),
     )
     name = models.CharField(max_length=100, blank=False, null=False, verbose_name='捐助人')
-    money = models.IntegerField(blank=False, null=False, verbose_name='捐助金额')
+    money = models.FloatField(blank=False, null=False, verbose_name='捐助金额')
     channel = models.IntegerField(choices=CHANNEL_TYPE, blank=False, null=False, verbose_name='捐助渠道')
     date = models.DateField(blank=False, null=False, verbose_name='捐助时间')
     remarks = models.CharField(max_length=100, default='-', verbose_name='备注',blank=False, null=False)
