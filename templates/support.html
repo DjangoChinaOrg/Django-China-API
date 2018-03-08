@@ -40,7 +40,7 @@
                 <tr>
                     <th scope="row">{{ support.name }}</th>
                     <td>{{ support.money }}元</td>
-                    <td>{{ support.channel }}</td>
+                    <td>{{ support.get_channel_display }}</td>
                     <td>
                         <time class="entry-date" datetime="2017年12月31日 23:29">{{ support.date }}</time>
                     </td>
@@ -73,11 +73,11 @@
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
                              aria-labelledby="pills-home-tab">
-                            <img src="{% static 'img/WeChatQRCode.png' %}">
+                            <img src="{% static 'img/wx.jpg' %}">
                         </div>
                         <div class="tab-pane fade" id="pills-profile" role="tabpanel"
                              aria-labelledby="pills-profile-tab">
-                            <img src="{% static 'img/ALiPayQRCode.png' %}">
+                            <img src="{% static 'img/zhifubao.jpg' %}">
                         </div>
 
                     </div>
