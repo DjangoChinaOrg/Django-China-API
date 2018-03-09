@@ -4,6 +4,7 @@ from markdown.extensions.toc import TocExtension
 from django.shortcuts import render
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView
+from django.db.models import Sum
 
 from .models import Post, ProgressBar, Support
 
@@ -14,7 +15,7 @@ def index(request):
         index_progress = ProgressBar.objects.filter(title='index')[0].progress
     except:
         index_progress = 70
-    support_list = Support.objects.order_by('-date')[:5]
+    support_list = Support.objects.order_by('-date', '-id')[:5]
     dic = {'post_list': post_list, 'progress': index_progress, 'support_list': support_list}
     return render(request, 'index.html', context=dic)
 
@@ -54,7 +55,15 @@ class PostDetailView(DetailView):
 class SupportView(ListView):
     model = Support
     template_name = 'support.html'
-    context_object_name = 'support_list'
+    context_object_name = 'support'
 
-    def get_queryset(self):
-        return super(SupportView, self).get_queryset().order_by('-date')
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(SupportView, self).get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['support_list'] = Support.objects.order_by('-date', '-id')
+        context['sum_money'] = Support.objects.aggregate(sum=Sum('money'))['sum']
+        return context
+    #
+    # def get_queryset(self):
+    #     return super(SupportView, self).get_queryset().order_by('-id')
