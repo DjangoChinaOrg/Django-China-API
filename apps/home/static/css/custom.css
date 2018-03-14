@@ -161,11 +161,17 @@ a:hover {
     padding-bottom: 15px;
 }
 
-.info .dynamic, .info .support {
+.info .dynamic, .info .support , .info .subscription-QR-code-wrapper{
     padding-left: 20px;
     padding-bottom: 20px;
     margin-bottom: 20px;
     /*border-bottom: 1px solid #ddd;*/
+}
+.info .subscription-QR-code-wrapper img{
+    padding: 0;
+    margin: 0;
+    padding-left: 0px;
+    padding-bottom: 20px;
 }
 
 .info ul {
