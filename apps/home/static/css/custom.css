@@ -1,5 +1,5 @@
-body {
-    min-width: 1400px;
+html, body {
+    width: 100%;
     color: #0C4B33;
     font-family: "Roboto", Corbel, Avenir, "Lucida Grande", "Lucida Sans", sans-serif, "Microsoft JhengHei";
 }
@@ -12,18 +12,19 @@ a:hover {
     text-decoration: none;
 }
 
-.body {
+/*.body {
     display: flex;
-    display: -webkit-flex; /* Safari */
+    display: -webkit-flex; !* Safari *!
     min-height: 100vh;
     flex-direction: column;
-}
+}*/
 
 .body-content {
     flex: 1;
 }
 
 .header {
+    width: 100%;
     background: #0C4B33;
     overflow: hidden;
     margin: 0;
@@ -48,15 +49,41 @@ a:hover {
     color: white;
 }
 
+/*适用于手机*/
+@media screen and (max-width: 736px) {
+    .container {
+        width: 100%;
+        margin: 0 auto;
+        padding: 100px 0 40px 0;
+    }
+    .homepage {
+        width: 100%;
+    }
+    .homepage .main {
+        max-width: 100%;
+        padding: 0;
+    }
+    .main h1 {
+        font-size: 32px;
+    }
+    .homepage .info {
+        float: none;
+        max-width: 100%;
+    }
+}
 .container {
     margin: 0 auto;
     /*max-width: 1400px;*/
     padding: 100px 0 40px 0;
 }
 
+.pay-type {
+    width: 100px;
+    margin: 20px auto 0;
+}
 /*主页*/
 .homepage{
-    min-width: 1400px;
+    width: 1400px;
 }
 .homepage .main {
     /*width: 80%;*/
@@ -83,7 +110,9 @@ a:hover {
     margin-bottom: 10px;
     color: #0C3C26;
 }
-
+.footer-title {
+    text-align: center;
+}
 .progress-bar {
     background-color: #0C3C26;
 }
@@ -261,4 +290,7 @@ a:hover {
     display: block;
     margin-top: 36px;
     margin-left: 0;
+}
+@media all {
+
 }
