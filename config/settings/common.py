@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'posts',
     'replies',
     'tags',
+    'balance'
 ]
 
 COMMENTS_APP = 'replies'
@@ -128,3 +129,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+AUTH_USER_MODEL = 'users.User'

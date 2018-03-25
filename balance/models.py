@@ -4,7 +4,7 @@ from django.conf import settings
 
 class Record(models.Model):
     REWARD_TYPE = (
-        (0, '每日签到奖励')
+        (0, '每日签到奖励'),
     )
 
     COIN_TYPE = (
@@ -14,8 +14,8 @@ class Record(models.Model):
     )
 
     created_time = models.DateTimeField("创建时间", auto_now=True)
-    reward_type = models.IntegerField("奖励类型", choices=REWARD_TYPE, max_length=10)
-    coin_type = models.IntegerField("钱币类型", choices=COIN_TYPE, max_length=10)
+    reward_type = models.IntegerField("奖励类型", choices=REWARD_TYPE)
+    coin_type = models.IntegerField("钱币类型", choices=COIN_TYPE)
     amount = models.PositiveIntegerField("数额")
     description = models.CharField("描述", max_length=300)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="用户")
