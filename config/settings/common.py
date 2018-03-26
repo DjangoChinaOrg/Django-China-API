@@ -38,6 +38,8 @@ INSTALLED_APPS = [
 
     # third-party apps
     'notifications',
+    'rest_framework',
+    'django_comments',
 
     # local apps
     'users',
