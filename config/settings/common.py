@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -38,6 +39,12 @@ INSTALLED_APPS = [
 
     # third-party apps
     'notifications',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
 
     # local apps
     'users',
@@ -131,3 +138,26 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'users.User'
+
+# django-rest-framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ),
+}
+
+# djangorestframework-jwt settings
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=60 * 30),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+}
+
+if DEBUG:
+    JWT_AUTH['JWT_EXPIRATION_DELTA'] = datetime.timedelta(days=1)
+
+# django-all-auth site setting
+SITE_ID = 1
+REST_USE_JWT = True
