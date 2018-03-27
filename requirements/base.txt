@@ -6,3 +6,4 @@ django-allauth==0.35.0
 django-ipware==2.0.1
 djangorestframework-jwt==1.11.0
 django-mptt==0.9.0
+pycodestyle==2.3.1
