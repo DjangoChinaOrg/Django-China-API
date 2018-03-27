@@ -13,6 +13,9 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     """
     Serializer for User model used for details
     """
+    post_count = serializers.SerializerMethodField()
+    reply_count = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         read_only_fields = (
@@ -33,8 +36,22 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'ip_joined',
             'last_login_ip',
             'is_superuser',
-            'is_staff'
+            'is_staff',
+            'post_count',
+            'reply_count',
         )
+
+    def get_post_count(self, obj):
+        """
+        Return the number of posts whose author is this user
+        """
+        return obj.post_set.count()
+
+    def get_reply_count(self, obj):
+        """
+        Return the number of replies whose author is this user
+        """
+        return obj.reply_comments.count()
 
 
 class UserRegistrationSerializer(RegisterSerializer):
