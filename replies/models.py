@@ -12,3 +12,9 @@ class Reply(MPTTModel, CommentAbstractModel):
     class Meta(CommentAbstractModel.Meta):
         verbose_name = "回复"
         verbose_name_plural = "回复"
+
+    def descendants(self):
+        """
+        获取回复的全部子孙回复，按回复时间正序排序
+        """
+        return self.get_descendants().order_by('submit_date')
