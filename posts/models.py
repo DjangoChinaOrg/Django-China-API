@@ -5,6 +5,11 @@ from django.contrib.contenttypes.fields import GenericRelation
 from replies.models import Reply
 
 
+class PublicManager(models.Manager):
+    def get_queryset(self):
+        return super(PublicManager, self).get_queryset().filter(hidden=False).order_by('-created_time')
+
+
 class Post(models.Model):
     title = models.CharField("标题", max_length=255)
     body = models.TextField("正文", blank=True)
@@ -18,6 +23,10 @@ class Post(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="作者")
     replies = GenericRelation(Reply, object_id_field='object_pk', content_type_field='content_type',
                               verbose_name="回复")
+
+    objects = models.Manager()
+    # 未隐藏的帖子
+    public = PublicManager()
 
     class Meta:
         verbose_name = "帖子"
