@@ -149,6 +149,16 @@ REST_FRAMEWORK = {
     ),
 }
 
+# django-rest-auth settings
+REST_AUTH_SERIALIZERS = {
+    'LOGIN_SERIALIZER': 'users.serializers.UserDetailsSerializer',
+    'USER_DETAILS_SERIALIZER': 'users.serializers.UserDetailsSerializer',
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'users.serializers.UserRegistrationSerializer',
+}
+
 # djangorestframework-jwt settings
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=60 * 30),
