@@ -151,7 +151,6 @@ REST_FRAMEWORK = {
 
 # django-rest-auth settings
 REST_AUTH_SERIALIZERS = {
-    'LOGIN_SERIALIZER': 'users.serializers.UserDetailsSerializer',
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserDetailsSerializer',
 }
 
