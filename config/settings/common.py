@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'notifications',
     'rest_framework',
     'django_comments',
+    'actstream',
 
     # local apps
     'users',

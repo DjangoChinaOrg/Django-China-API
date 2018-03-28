@@ -8,6 +8,7 @@ from .serializers import (
     ReplyCreationSerializer,
     TreeReplySerializer,
     FlatReplySerializer,
+    FollowSerializer,
 )
 
 from .models import Reply
@@ -43,3 +44,18 @@ class TreeReplyListView(ListAPIView):
     """
     queryset = Reply.objects.filter(parent__isnull=True)
     serializer_class = TreeReplySerializer
+
+
+class ReplyLikeCreateView(CreateAPIView):
+    serializer_class = FollowSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def perform_create(self, serializer):
+        reply = serializer.save(user=self.request.user)
+
+        # 创建相应的 notification
+        # signals.comment_was_posted.send(
+        #     sender=reply.__class__,
+        #     comment=reply,
+        #     request=self.request
+        # )

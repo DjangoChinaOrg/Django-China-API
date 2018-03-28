@@ -18,6 +18,6 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^reply/', include('replies.urls')),
+    url(r'^replies/', include('replies.urls')),
     url(r'^api-auth/', include('rest_framework.urls')),  # 仅仅用于测试
 ]

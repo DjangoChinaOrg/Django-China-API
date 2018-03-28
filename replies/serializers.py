@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from actstream.models import Follow
 
 from .models import Reply
 
@@ -18,6 +19,7 @@ class FlatReplySerializer(serializers.ModelSerializer):
     # 获取用户头像报 Unicode 编码错误
     # user_mugshot = serializers.SerializerMethodField(read_only=True)
     user_nickname = serializers.SerializerMethodField(read_only=True)
+    like_count = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Reply
@@ -28,6 +30,7 @@ class FlatReplySerializer(serializers.ModelSerializer):
             'submit_date',
             'comment',
             'parent_user',
+            'like_count',
         )
 
     def get_post_title(self, obj):
@@ -43,6 +46,9 @@ class FlatReplySerializer(serializers.ModelSerializer):
 
     def get_user_nickname(self, obj):
         return obj.user.nickname
+
+    def get_like_count(self, obj):
+        return Follow.objects.for_object(obj, flag='like').count()
 
 
 class ReplyCreationSerializer(serializers.ModelSerializer):
@@ -81,6 +87,7 @@ class TreeReplySerializer(serializers.ModelSerializer):
     # TODO: 统一到 user 中，等待 UserSerializer 的定义
     # user_mugshot = serializers.SerializerMethodField(read_only=True)
     user_nickname = serializers.SerializerMethodField(read_only=True)
+    like_count = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Reply
@@ -91,6 +98,7 @@ class TreeReplySerializer(serializers.ModelSerializer):
             'user_nickname',
             'comment',
             'submit_date',
+            'like_count',
             'num_descendants',
             'descendants',
         )
@@ -103,3 +111,16 @@ class TreeReplySerializer(serializers.ModelSerializer):
 
     def get_user_nickname(self, obj):
         return obj.user.nickname
+
+    def get_like_count(self, obj):
+        return Follow.objects.for_object(obj, flag='like').count()
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = (
+            'content_type',
+            'object_id',
+            'flag',
+        )
