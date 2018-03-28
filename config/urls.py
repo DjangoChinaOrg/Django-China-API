@@ -1,5 +1,7 @@
 from rest_framework_jwt.views import refresh_jwt_token
 
+from users.views import ConfirmEmailView
+
 """DjangoChina URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -20,7 +22,10 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^rest-auth/registration/account-confirm-email/(?P<key>[-:\w]+)/$',
+        ConfirmEmailView.as_view(),
+        name='account_confirm_email'),
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^rest-auth/jwt-refresh/', refresh_jwt_token),
+    url(r'^rest-auth/', include('rest_auth.urls')),
 ]

@@ -58,30 +58,6 @@ class UserRegistrationSerializer(RegisterSerializer):
     """
     Inherit from the default serializer in rest_auth, added nickname field
     """
-    nickname = serializers.CharField(max_length=50)
-
-    def validate_nickname(self, nickname):
-        """
-        Validate nickname, it can't be empty or duplicated
-        """
-        nickname = get_adapter().clean_email(nickname)
-        if User.objects.filter(nickname=nickname).exists():
-            # TODO: add support for locale
-            raise serializers.ValidationError(
-                _("已存在一位使用该昵称的用户。")
-            )
-        return nickname
-
-    def get_cleaned_data(self):
-        """
-        Override the ancestor's get_cleaned_data method to include [nickname]
-        """
-        return {
-            'username': self.validated_data.get('username', ''),
-            'password1': self.validated_data.get('password1', ''),
-            'email': self.validated_data.get('email', ''),
-            'nickname': self.validated_data.get('nickname', ''),
-        }
 
     def save(self, request):
         """
@@ -92,7 +68,7 @@ class UserRegistrationSerializer(RegisterSerializer):
         adapter = get_adapter()
         user = adapter.new_user(request)
         self.cleaned_data = self.get_cleaned_data()
-        user.nickname = self.cleaned_data.get('nickname')
+        user.nickname = self.cleaned_data.get('username')
         ip = get_ip_address_from_request(request)
         if ip:
             user.ip_joined = ip

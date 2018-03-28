@@ -26,6 +26,8 @@ ALLOWED_HOSTS = []
 
 SITE_ID = 1
 
+LOGIN_URL = '/'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
     'rest_auth',
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
     'rest_auth.registration',
 
     # local apps
@@ -71,7 +74,10 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'templates', 'users')
+        ]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -167,6 +173,10 @@ JWT_AUTH = {
 if DEBUG:
     JWT_AUTH['JWT_EXPIRATION_DELTA'] = datetime.timedelta(days=1)
 
-# django-all-auth site setting
+# django-all-auth setting
 SITE_ID = 1
 REST_USE_JWT = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = True
+LOGIN_ON_EMAIL_CONFIRMATION = True
