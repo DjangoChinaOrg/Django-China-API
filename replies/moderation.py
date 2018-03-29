@@ -15,7 +15,7 @@ class ReplyModerator(CommentModerator):
     def notify(self, reply, content_object, request):
         post_author = content_object.author
 
-        if reply.parent:
+        if reply.parent:  # 回复的回复
             parent_user = reply.parent.user
             # 通知被回复的人，自己回复自己无需通知
             if parent_user != reply.user:
@@ -30,16 +30,16 @@ class ReplyModerator(CommentModerator):
                 # 如果被回复的人不是帖子作者，且不是帖子作者自己的回复，帖子作者应该收到通知
                 comment_data = {
                     'recipient': post_author,
-                    'verb': 'comment',
+                    'verb': 'reply',
                     'target': reply,
                 }
                 notify.send(sender=reply.user, **comment_data)
         else:
-            # 如果是直接回复，且不是文章作者自己回复，则通知帖子作者
+            # 如果是直接回复，且不是帖子作者自己回复，则通知帖子作者
             if post_author != reply.user:
                 comment_data = {
                     'recipient': post_author,
-                    'verb': 'comment',
+                    'verb': 'reply',
                     'target': reply,
                 }
                 notify.send(sender=reply.user, **comment_data)

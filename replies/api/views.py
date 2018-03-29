@@ -4,14 +4,15 @@ from rest_framework.generics import (
 )
 from django_comments import signals
 from rest_framework import permissions
-from .serializers import (
+from replies.api.serializers import (
     ReplyCreationSerializer,
     TreeReplySerializer,
     FlatReplySerializer,
     FollowSerializer,
 )
 
-from .models import Reply
+from replies.models import Reply
+from notifications.signals import notify
 
 
 class ReplyCreateView(CreateAPIView):
@@ -51,11 +52,11 @@ class ReplyLikeCreateView(CreateAPIView):
     permission_classes = [permissions.IsAuthenticated, ]
 
     def perform_create(self, serializer):
-        reply = serializer.save(user=self.request.user)
+        follow = serializer.save(user=self.request.user)
 
         # 创建相应的 notification
-        # signals.comment_was_posted.send(
-        #     sender=reply.__class__,
-        #     comment=reply,
-        #     request=self.request
-        # )
+        data = {
+            'recipient': follow.follow_object.user,
+            'verb': 'like',
+        }
+        notify.send(sender=self.request.user, **data)

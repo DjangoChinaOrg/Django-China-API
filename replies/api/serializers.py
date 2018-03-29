@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from actstream.models import Follow
 
-from .models import Reply
+from replies.models import Reply
 
 
 class FlatReplySerializer(serializers.ModelSerializer):
@@ -117,6 +117,9 @@ class TreeReplySerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
+    """
+    用于记录回复的点赞信息
+    """
     class Meta:
         model = Follow
         fields = (

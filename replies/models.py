@@ -5,9 +5,14 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 
 class Reply(MPTTModel, CommentAbstractModel):
-    parent = TreeForeignKey('self', null=True, blank=True,
-                            verbose_name="上级回复", related_name='children',
-                            on_delete=models.SET_NULL)
+    parent = TreeForeignKey(
+        'self',
+        verbose_name="上级回复",
+        related_name='children',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     class Meta(CommentAbstractModel.Meta):
         verbose_name = "回复"
