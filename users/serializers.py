@@ -11,7 +11,7 @@ from .utils import get_ip_address_from_request
 
 class UserDetailsSerializer(serializers.ModelSerializer):
     """
-    Serializer for User model used for details
+    用户详细信息的序列器
     """
     post_count = serializers.SerializerMethodField()
     reply_count = serializers.SerializerMethodField()
@@ -43,28 +43,27 @@ class UserDetailsSerializer(serializers.ModelSerializer):
 
     def get_post_count(self, obj):
         """
-        Return the number of posts whose author is this user
+        返回用户提交的帖子数量
         """
         return obj.post_set.count()
 
     def get_reply_count(self, obj):
         """
-        Return the number of replies whose author is this user
+        返回用户提交的回复数量
         """
         return obj.reply_comments.count()
 
 
 class UserRegistrationSerializer(RegisterSerializer):
     """
-    Inherit from the default serializer in rest_auth, added nickname field
+    继承至rest_auth的默认序列器，增加了昵称
     """
 
     def save(self, request):
         """
-        Override the ancestor's save method to save [nickname]
-        Also save the IP address as the value of [ip_joined]
+        改写父类的save方法，自动将username存入到nickname域内
+        同时检测并存入用户的注册IP地址
         """
-        # The client's IP address is private
         adapter = get_adapter()
         user = adapter.new_user(request)
         self.cleaned_data = self.get_cleaned_data()

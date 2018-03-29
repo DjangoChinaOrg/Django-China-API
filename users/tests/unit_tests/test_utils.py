@@ -6,18 +6,18 @@ from users.utils import get_ip_address_from_request
 
 class GetIpAddressTests(TestCase):
     """
-    Tests for get_ip_address_from_request util method
+    get_ip_address_from_request函数的测试
     """
     def setUp(self):
         """
-        Setup the request factory and create a test user
+        创建request工厂，创建测试用户
         """
         super(GetIpAddressTests, self).setUp()
         self.rf = RequestFactory()
 
     def test_get_ip_address_from_request(self):
         """
-        Test if an IP address is in the request, it'll be saved on the user object
+        测试当request里包含IP信息的时候，会正确返回IP地址
         """
         test_ip = '210.1.1.1'
         request = self.rf.get('/', REMOTE_ADDR=test_ip)
@@ -26,7 +26,7 @@ class GetIpAddressTests(TestCase):
 
     def test_get_ip_address_from_request__without_ip(self):
         """
-        Test if an IP address is not present in the request, the method won't blow up
+        测试当request里不包含IP信息的时候，函数仍然会正常返回
         """
         request = self.rf.get('/')
         ip_address = get_ip_address_from_request(request)

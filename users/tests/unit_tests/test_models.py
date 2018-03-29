@@ -6,11 +6,11 @@ from users.models import User, update_last_login_ip
 
 class UserSignalTests(TestCase):
     """
-    Tests for user signal related methods
+    用户信号函数的测试
     """
     def setUp(self):
         """
-        Setup the request factory and create a test user
+        创建request工厂，创建测试用户
         """
         super(UserSignalTests, self).setUp()
         self.rf = RequestFactory()
@@ -18,7 +18,7 @@ class UserSignalTests(TestCase):
 
     def test_update_last_login_ip(self):
         """
-        Test if an IP address is in the request, it'll be saved on the user object
+        测试当request里包含IP信息的时候，会被成功存入用户的last_login_ip域
         """
         test_ip = '210.1.1.1'
         request = self.rf.get('/', REMOTE_ADDR=test_ip)
@@ -27,7 +27,7 @@ class UserSignalTests(TestCase):
 
     def test_update_last_login_ip__without_ip(self):
         """
-        Test if an IP address is not present in the request, the method won't blow up
+        测试当request里不包含IP信息的时候，这个函数仍然会正常返回
         """
         request = self.rf.get('/')
         update_last_login_ip(None, self.user, request)

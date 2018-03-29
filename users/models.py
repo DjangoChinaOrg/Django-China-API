@@ -13,7 +13,7 @@ def user_mugshot_path(instance, filename):
 
 class User(AbstractUser):
     """
-    Field definitions for User model
+    用户模型定义
     """
     last_login_ip = models.GenericIPAddressField("最近一次登陆IP", unpack_ipv4=True, blank=True, null=True)
     ip_joined = models.GenericIPAddressField("注册IP", unpack_ipv4=True, blank=True, null=True)
@@ -27,7 +27,7 @@ class User(AbstractUser):
 
 def update_last_login_ip(sender, user, request, **kwargs):
     """
-    Update the value of last_login_ip whenever a user logged in successfully
+    更新用户最后一次登陆的IP地址
     """
     ip = get_ip_address_from_request(request)
     if ip:
