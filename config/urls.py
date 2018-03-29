@@ -28,4 +28,6 @@ urlpatterns = [
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^rest-auth/jwt-refresh/', refresh_jwt_token),
     url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^replies/', include('replies.urls')),
+    url(r'^api-auth/', include('rest_framework.urls')),  # 仅仅用于测试
 ]
