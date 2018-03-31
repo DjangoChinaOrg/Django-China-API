@@ -14,5 +14,5 @@ script:
 
 branches:
   only:
-  - master
-  - dev
+    - master
+    - dev
