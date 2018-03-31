@@ -14,7 +14,8 @@ script:
   - python runtests.py
   - coverage run --source=. manage.py test
 
-after_success:coveralls
+after_success:
+  - coveralls
 
 branches:
   only:
