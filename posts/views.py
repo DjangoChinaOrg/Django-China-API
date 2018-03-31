@@ -60,20 +60,37 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, tags=tags)
 
     def perform_update(self, serializer):
+        """
+        重写update方法，保证编辑帖子时，标签可以更新
+        """
         super(PostViewSet, self).perform_update(serializer)
         tags = []
         tags_data = self.request.data.get('tags')
-        if not tags_data:
-            raise serializers.ValidationError("请至少选择一个标签")
-        if len(tags_data) > 3:
-            raise serializers.ValidationError("最多可以选择3个标签")
-        for name in tags_data:
-            try:
-                tag = Tag.objects.get(name=name)
-                tags.append(tag)
-            except Exception:
-                raise serializers.ValidationError("标签不存在")
-        serializer.save(tags=tags)
+        if self.request.method == 'PUT':
+            if not tags_data:
+                raise serializers.ValidationError("请选择至少一个标签")
+            elif len(tags_data) > 3:
+                raise serializers.ValidationError("最多可以选择三个标签")
+            else:
+                for name in tags_data:
+                    try:
+                        tag = Tag.objects.get(name=name)
+                        tags.append(tag)
+                    except Exception:
+                        raise serializers.ValidationError("标签不存在")
+        elif self.request.method == 'PATCH':
+            if tags_data is not None:
+                if len(tags_data) == 0:
+                    raise serializers.ValidationError("请选择至少一个标签")
+                elif len(tags_data) > 3:
+                    raise serializers.ValidationError("最多可以选择三个标签")
+                else:
+                    for name in tags_data:
+                        try:
+                            tag = Tag.objects.get(name=name)
+                            tags.append(tag)
+                        except Exception:
+                            raise serializers.ValidationError("标签不存在")
 
 
     @list_route()

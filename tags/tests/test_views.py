@@ -54,4 +54,22 @@ class TagTests(APITestCase):
             'name': 'test tag'
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_no_duplicate_tags(self):
+        """
+        测试没有重复的标签
+        """
+        """
+        测试管理员可以添加标签
+        """
+        self.tag = Tag.objects.create(name='test tag',
+                                      creator=self.admin
+                                      )
+        url = reverse('tag-list')
+        data = {
+            'name': 'test tag'
+        }
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
