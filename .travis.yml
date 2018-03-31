@@ -1,0 +1,18 @@
+language: python
+
+python:
+  - "3.5"
+
+install:
+  - pip install -r requirements/local.txt
+
+env:
+  - DJANGO_SETTINGS_MODULE=config.settings.local
+
+script:
+  - python runtests.py
+
+branches:
+  only:
+    - master
+    - dev
