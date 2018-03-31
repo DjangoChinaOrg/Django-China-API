@@ -65,7 +65,7 @@ class ReplyCreateViewTestCase(APITestCase):
             "parent": None,
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_only_support_post_method(self):
         url = reverse('replies:create_reply')
@@ -134,7 +134,7 @@ class ReplyLikeCreateViewTestCase(APITestCase):
         # 确定生成了通知
         self.assertEqual(Notification.objects.count(), 1)
 
-    def test_anonymous_user_can_not_create_reply(self):
+    def test_anonymous_user_can_not_like_reply(self):
         url = reverse('replies:like_reply')
         data = {
             "content_type": self.reply_ct.id,
@@ -142,7 +142,7 @@ class ReplyLikeCreateViewTestCase(APITestCase):
             "flag": "like",
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_only_support_post_method(self):
         url = reverse('replies:like_reply')
