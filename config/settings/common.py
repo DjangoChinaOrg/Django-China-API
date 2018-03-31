@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'django_comments',
     'actstream',
+    'django_filters',
 
     # local apps
     'users',
