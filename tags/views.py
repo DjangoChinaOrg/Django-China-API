@@ -25,7 +25,7 @@ class TagPagination(PageNumberPagination):
 
 class TagViewSet(viewsets.ModelViewSet):
     """
-    标签按照帖子数量来排序的
+    标签列表按照帖子数量来排序的
     """
     queryset = Tag.objects.annotate(num_posts=Count('post')).order_by('-num_posts')
     serializer_class = TagSerializer

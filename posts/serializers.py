@@ -54,6 +54,9 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         )
 
     def get_content_type(self, value):
+        """
+
+        """
         content_type = ContentType.objects.get_for_model(value)
         return content_type.id
 
@@ -61,7 +64,7 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         """
         返回帖子下的回复
         """
-        replies = value.replies
+        replies = value.replies.filter(parent__isnull=True)
         serializer = TreeReplySerializer(replies, many=True)
         return serializer.data
 
