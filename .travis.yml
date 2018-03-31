@@ -11,3 +11,8 @@ env:
 
 script:
   - python runtests.py
+
+branches:
+  only:
+  - master
+  - dev
