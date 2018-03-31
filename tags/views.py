@@ -1,6 +1,9 @@
+from collections import OrderedDict
+
 from django.db.models import Count
 
 from rest_framework import viewsets
+from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
 from .models import Tag
@@ -10,6 +13,14 @@ from .permissions import TagPermissionOrReadOnly
 
 class TagPagination(PageNumberPagination):
     page_size = 10
+
+    def get_paginated_response(self, data):
+        return Response(OrderedDict([
+            ('count', self.page.paginator.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('tags', data)
+        ]))
 
 
 class TagViewSet(viewsets.ModelViewSet):

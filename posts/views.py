@@ -47,14 +47,34 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         tags = []
         tags_data = self.request.data.get('tags')
-        if len(tags_data) == 0:
+        if not tags_data:
             raise serializers.ValidationError("请至少选择一个标签")
         if len(tags_data) > 3:
             raise serializers.ValidationError("最多可以选择3个标签")
         for name in tags_data:
-            tag = Tag.objects.get(name=name)
-            tags.append(tag)
+            try:
+                tag = Tag.objects.get(name=name)
+                tags.append(tag)
+            except Exception:
+                raise serializers.ValidationError("标签不存在")
         serializer.save(author=self.request.user, tags=tags)
+
+    def perform_update(self, serializer):
+        super(PostViewSet, self).perform_update(serializer)
+        tags = []
+        tags_data = self.request.data.get('tags')
+        if not tags_data:
+            raise serializers.ValidationError("请至少选择一个标签")
+        if len(tags_data) > 3:
+            raise serializers.ValidationError("最多可以选择3个标签")
+        for name in tags_data:
+            try:
+                tag = Tag.objects.get(name=name)
+                tags.append(tag)
+            except Exception:
+                raise serializers.ValidationError("标签不存在")
+        serializer.save(tags=tags)
+
 
     @list_route()
     def popular_posts(self, request):
