@@ -41,4 +41,5 @@ urlpatterns = [
     url(r'^replies/', include('replies.urls')),
     url(r'^api-auth/', include('rest_framework.urls')),  # 仅仅用于测试
     url(r'^', include(router.urls)),
+    url(r'^post/', include('posts.urls'))
 ]

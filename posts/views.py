@@ -8,10 +8,14 @@ from django_filters import rest_framework as filters
 from rest_framework import permissions, viewsets, pagination, serializers
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+)
 
 from .models import Post
 from tags.models import Tag
-from .serializers import PostSerializer
+from .serializers import IndexPostListSerializer, PopularPostSerializer, PostDetailSerializer
 from .permissions import IsAdminAuthorOrReadOnly
 
 
@@ -29,8 +33,10 @@ class PostPagination(pagination.PageNumberPagination):
 
 class PostViewSet(viewsets.ModelViewSet):
     # 所有非隐藏的帖子
-    queryset = Post.public.all()
-    serializer_class = PostSerializer
+    queryset = Post.objects.annotate(
+        latest_reply_time=Max('replies__submit_date')
+    ).order_by('-pinned', '-latest_reply_time', '-created_time')
+    serializer_class = IndexPostListSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsAdminAuthorOrReadOnly)
     pagination_class = PostPagination
@@ -39,6 +45,11 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     # 在post-list页面可以按标签字段过滤出特定标签下的帖子
     filter_fields = ('tags',)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = PostDetailSerializer(instance, context={'request': request})
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         """
@@ -93,8 +104,8 @@ class PostViewSet(viewsets.ModelViewSet):
                             raise serializers.ValidationError("标签不存在")
 
 
-    @list_route()
-    def popular_posts(self, request):
+    @list_route(serializer_class=PopularPostSerializer)
+    def popular(self, request):
         """
         返回48小时内评论次数最多的帖子
         """
@@ -108,3 +119,35 @@ class PostViewSet(viewsets.ModelViewSet):
         ).order_by('-num_replies', '-latest_reply_time')[:10]
         serializer = self.get_serializer(popular_posts, many=True)
         return Response(serializer.data)
+
+
+class IndexPostListView(ListAPIView):
+    queryset = Post.objects.annotate(
+        latest_reply_time=Max('replies__submit_date')
+    ).order_by('-pinned', '-latest_reply_time', '-created_time')
+    serializer_class = IndexPostListSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = PostPagination
+    # 在post-list页面可以按标签字段过滤出特定标签下的帖子
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('tags',)
+
+    @list_route(serializer_class=PopularPostSerializer)
+    def popular(self, request):
+        """
+        返回48小时内评论次数最多的帖子
+        """
+        popular_posts = Post.public.annotate(
+            num_replies=Count('replies'),
+            latest_reply_time=Max('replies__submit_date')
+        ).filter(
+            num_replies__gt=0,
+            latest_reply_time__gt=(now() - datetime.timedelta(days=2)),
+            latest_reply_time__lt=now()
+        ).order_by('-num_replies', '-latest_reply_time')[:10]
+        serializer = self.get_serializer(popular_posts, many=True)
+        return Response(serializer.data)
+
+
+class PostCreateView(CreateAPIView):
+    pass
