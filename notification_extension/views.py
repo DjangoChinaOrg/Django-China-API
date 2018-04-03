@@ -21,14 +21,16 @@ class NotificationViewSet(mixins.DestroyModelMixin,
     pagination_class = NotificationPagination
     permission_classes = [permissions.IsAuthenticated, ]
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    ordering_fields = ('timestamp', )
-    # filter_class = NotificationFilter  # 过滤器
+    ordering_fields = ('timestamp',)
+    base_name = 'Notification'
 
-    # def get_queryset(self):
-    #     # TODO 全部通知 已读通知 和 未读通知
-    #     return Notification.objects.filter(recipient=self.request.user)
+    filter_class = NotificationFilter  # 过滤器
 
-    queryset = Notification.objects.all()
+    def get_queryset(self):
+        # TODO 全部通知 已读通知 和 未读通知
+        return Notification.objects.filter(recipient=self.request.user)
+
+    # queryset = Notification.objects.all()
 
     def perform_destroy(self, instance):
         instance.delete()

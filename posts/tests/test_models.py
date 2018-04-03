@@ -9,6 +9,7 @@ class PostModelTests(TestCase):
     """
     测试Post的objects和public manager
     """
+
     def setUp(self):
         self.user = User.objects.create_user(username='test',
                                              email='test@test.com',

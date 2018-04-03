@@ -55,7 +55,6 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_content_type(self, value):
         """
-
         """
         content_type = ContentType.objects.get_for_model(value)
         return content_type.id
