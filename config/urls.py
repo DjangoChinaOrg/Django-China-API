@@ -25,11 +25,13 @@ from rest_framework.routers import DefaultRouter
 from posts.views import PostViewSet
 from tags.views import TagViewSet
 from replies.api.views import ReplyViewSet
+from users.views import UserViewSets
 
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'tags', TagViewSet)
 router.register(r'replies', ReplyViewSet)
+router.register(r'users', UserViewSets)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -39,7 +41,6 @@ urlpatterns = [
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^rest-auth/jwt-refresh/', refresh_jwt_token),
     url(r'^rest-auth/', include('rest_auth.urls')),
-    # url(r'^replies/', include('replies.urls')),
     url(r'^api-auth/', include('rest_framework.urls')),  # 仅仅用于测试
     url(r'^', include(router.urls)),
 ]
