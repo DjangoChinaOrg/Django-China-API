@@ -12,7 +12,7 @@ from users.models import User
 from ..models import Reply
 
 
-class ReplyCreateViewTestCase(APITestCase):
+class ReplyViewSetsTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             username='test',

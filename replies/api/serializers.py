@@ -2,6 +2,7 @@ from rest_framework import serializers
 from actstream.models import Follow
 
 from replies.models import Reply
+from users.serializers import UserDetailsSerializer
 
 
 class FlatReplySerializer(serializers.ModelSerializer):
@@ -63,20 +64,21 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
             'object_pk',
             'site',
             'comment',
+            'parent',
             'submit_date',
             'ip_address',
-            'parent',
+            'is_public',
+            'is_removed',
         )
-        extra_kwargs = {
-            'submit_date': {'required': False, 'allow_null': True},
+        read_only_fields = (
+            'submit_date',
+            'ip_address',
+            'is_public',
+            'is_removed',
+        )
 
-            # 似乎以下设置没有生效
-            'ip_address': {'required': False, 'allow_null': True},
-            'site': {'default': 1},
-        }
 
-
-class TreeReplySerializer(serializers.ModelSerializer):
+class TreeRepliesSerializer(serializers.ModelSerializer):
     """
     返回两层的 reply，第一层为根 reply，第二层为这个 reply 的所有子孙 reply。
     这个 Serializer 适合用于帖子详情页的 reply 列表。
@@ -120,10 +122,20 @@ class FollowSerializer(serializers.ModelSerializer):
     """
     用于记录回复的点赞信息
     """
+
     class Meta:
         model = Follow
         fields = (
+            'user',
             'content_type',
             'object_id',
             'flag',
+            'started',
+        )
+        read_only_fields = (
+            'user',
+            'content_type',
+            'object_id',
+            'flag',
+            'started',
         )

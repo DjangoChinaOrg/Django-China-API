@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from .models import Post
 from tags.serializers import TagSerializer
-from replies.api.serializers import TreeReplySerializer
+from replies.api.serializers import TreeRepliesSerializer
 
 
 class PostSerializer(serializers.HyperlinkedModelSerializer):
@@ -65,7 +65,7 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         返回帖子下的回复
         """
         replies = value.replies.filter(parent__isnull=True)
-        serializer = TreeReplySerializer(replies, many=True)
+        serializer = TreeRepliesSerializer(replies, many=True)
         return serializer.data
 
     def get_reply_count(self, value):
