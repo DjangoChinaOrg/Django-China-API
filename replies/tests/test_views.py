@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework import test
 from notifications.models import Notification
 from actstream.models import Follow
 
@@ -12,7 +12,7 @@ from users.models import User
 from ..models import Reply
 
 
-class ReplyViewSetsTestCase(APITestCase):
+class ReplyViewSetsTestCase(test.APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             username='test',
@@ -152,6 +152,10 @@ class ReplyViewSetsTestCase(APITestCase):
         self.assertEqual(Follow.objects.get().follow_object, self.reply)
         self.assertEqual(Follow.objects.get().flag, 'like')
 
+        # 确认生成了通知
+        self.assertEqual(Notification.objects.count(), 1)
+        self.assertEqual(Notification.objects.get().recipient, self.reply.user)
+
     def test_user_can_not_like_same_reply_twice(self):
         url = reverse('reply-like', kwargs={'pk': self.reply.id})
         data = {
@@ -163,8 +167,17 @@ class ReplyViewSetsTestCase(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+        self.assertEqual(Follow.objects.count(), 1)
+
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # An error occurred in the current transaction. You can't execute queries until the end of the 'atomic' block.
+        # 暂时不知道如何解决
+        # self.assertEqual(Follow.objects.count(), 1)
+
+        # 确认生成了通知
+        # self.assertEqual(Notification.objects.count(), 1)
+        # self.assertEqual(Notification.objects.get().recipient, self.reply.user)
 
     def test_user_can_delete_self_like(self):
         url = reverse('reply-like', kwargs={'pk': self.reply.id})
