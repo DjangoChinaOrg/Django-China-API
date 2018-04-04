@@ -13,10 +13,10 @@ class NotificationPagination(pagination.PageNumberPagination):
     page_query_param = "page"
 
 
-class NotificationViewSet(mixins.DestroyModelMixin,
-                          mixins.ListModelMixin,
+class NotificationViewSet(mixins.ListModelMixin,
                           mixins.UpdateModelMixin,
                           mixins.RetrieveModelMixin,
+                          mixins.DestroyModelMixin,
                           viewsets.GenericViewSet):
     serializer_class = NotificationSerializer
     pagination_class = NotificationPagination
@@ -26,10 +26,11 @@ class NotificationViewSet(mixins.DestroyModelMixin,
     filter_class = NotificationFilter  # 过滤器
 
     def get_queryset(self):
-        return Notification.objects.filter(recipient=self.request.user)
+        return Notification.objects.filter(recipient=self.request.user).active()
 
     def perform_destroy(self, instance):
-        instance.delete()
+        instance.deleted = True
+        instance.save()
 
     def perform_update(self, serializer):
         serializer.update()
