@@ -13,6 +13,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     """
     用户详细信息的序列器
     """
+    mugshot_url = serializers.URLField(source='mugshot.url')
     post_count = serializers.SerializerMethodField()
     reply_count = serializers.SerializerMethodField()
 
@@ -22,6 +23,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'date_joined',
+            'mugshot_url',
             'ip_joined',
             'last_login_ip',
             'is_superuser',
@@ -33,6 +35,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'nickname',
             'email',
             'date_joined',
+            'mugshot_url',
             'ip_joined',
             'last_login_ip',
             'is_superuser',
