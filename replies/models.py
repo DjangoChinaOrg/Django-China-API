@@ -26,5 +26,9 @@ class Reply(MPTTModel, CommentAbstractModel):
         return self.get_descendants().order_by('submit_date')
 
     @property
-    def ctype_id(self):
+    def ctype(self):
         return ContentType.objects.get_for_model(self)
+
+    @property
+    def ctype_id(self):
+        return self.ctype.id

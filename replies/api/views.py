@@ -21,7 +21,7 @@ from .permissions import NotSelf
 class ReplyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = ReplyCreationSerializer
     permission_classes = [permissions.IsAuthenticated, ]
-    queryset = Reply.objects.all()
+    queryset = Reply.objects.filter(is_public=True, is_removed=False)
 
     def perform_create(self, serializer):
         parent_reply = serializer.validated_data.get('parent')
@@ -47,7 +47,7 @@ class ReplyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             try:
                 follow = Follow.objects.create(
                     user=self.request.user,
-                    content_type=reply.ctype_id,
+                    content_type=reply.ctype,
                     object_id=reply.id,
                     flag='like',
                 )
@@ -63,7 +63,7 @@ class ReplyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 'verb': 'like',
             }
             notify.send(sender=self.request.user, **data)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif self.request.method == 'DELETE':
             Follow.objects.filter(
                 user=self.request.user,
