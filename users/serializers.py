@@ -21,7 +21,6 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'id',
             'username',
-            'nickname',
             'date_joined',
             'ip_joined',
             'last_login_ip',
@@ -32,6 +31,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'nickname',
+            'email',
             'date_joined',
             'ip_joined',
             'last_login_ip',
