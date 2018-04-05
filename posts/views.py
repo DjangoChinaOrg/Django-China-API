@@ -1,18 +1,18 @@
 import datetime
 from collections import OrderedDict
 
+from django.db.models import Count, Max
 from django.utils.timezone import now
-from django.db.models import Max, Count
-
 from django_filters import rest_framework as filters
-from rest_framework import permissions, viewsets, pagination, serializers
+from rest_framework import pagination, permissions, serializers, viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 
-from .models import Post
 from tags.models import Tag
-from .serializers import PostSerializer
+
+from .models import Post
 from .permissions import IsAdminAuthorOrReadOnly
+from .serializers import PostSerializer
 
 
 class PostPagination(pagination.PageNumberPagination):
@@ -91,7 +91,6 @@ class PostViewSet(viewsets.ModelViewSet):
                             tags.append(tag)
                         except Exception:
                             raise serializers.ValidationError("标签不存在")
-
 
     @list_route()
     def popular_posts(self, request):

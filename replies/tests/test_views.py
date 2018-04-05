@@ -1,14 +1,14 @@
-from django.urls import reverse
+from actstream.models import Follow
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-
+from django.urls import reverse
+from notifications.models import Notification
 from rest_framework import status
 from rest_framework.test import APITestCase
-from notifications.models import Notification
-from actstream.models import Follow
 
 from posts.models import Post
 from users.models import User
+
 from ..models import Reply
 
 

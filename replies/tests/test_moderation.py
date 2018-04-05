@@ -1,11 +1,11 @@
-from django.test import TestCase
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-
+from django.test import TestCase
 from notifications.models import Notification
 
-from users.models import User
 from posts.models import Post
+from users.models import User
+
 from ..models import Reply
 from ..moderation import ReplyModerator
 
