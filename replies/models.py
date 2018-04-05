@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
 from django_comments.abstracts import CommentAbstractModel
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -22,3 +23,11 @@ class Reply(MPTTModel, CommentAbstractModel):
         获取回复的全部子孙回复，按回复时间正序排序
         """
         return self.get_descendants().order_by('submit_date')
+
+    @property
+    def ctype(self):
+        return ContentType.objects.get_for_model(self)
+
+    @property
+    def ctype_id(self):
+        return self.ctype.id
