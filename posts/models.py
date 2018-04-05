@@ -1,6 +1,6 @@
-from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
 
 from replies.models import Reply
 
