@@ -1,18 +1,12 @@
-from rest_framework.generics import (
-    CreateAPIView,
-    ListAPIView,
-)
 from django_comments import signals
-from rest_framework import permissions
-from replies.api.serializers import (
-    ReplyCreationSerializer,
-    TreeReplySerializer,
-    FlatReplySerializer,
-    FollowSerializer,
-)
-
-from replies.models import Reply
 from notifications.signals import notify
+from rest_framework import permissions
+from rest_framework.generics import CreateAPIView, ListAPIView
+
+from replies.api.serializers import (FlatReplySerializer, FollowSerializer,
+                                     ReplyCreationSerializer,
+                                     TreeReplySerializer)
+from replies.models import Reply
 
 
 class ReplyCreateView(CreateAPIView):
