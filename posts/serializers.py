@@ -1,9 +1,10 @@
-from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
+from rest_framework import serializers
+
+from replies.api.serializers import TreeRepliesSerializer
+from tags.serializers import TagSerializer
 
 from .models import Post
-from tags.serializers import TagSerializer
-from replies.api.serializers import TreeReplySerializer
 
 
 class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
@@ -130,7 +131,7 @@ class PostDetailSerializer(IndexPostListSerializer):
         返回帖子下的回复
         """
         replies = value.replies.filter(parent__isnull=True)
-        serializer = TreeReplySerializer(replies, many=True)
+        serializer = TreeRepliesSerializer(replies, many=True)
         return serializer.data
 
     def get_participants_count(self, value):

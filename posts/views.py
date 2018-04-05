@@ -1,21 +1,24 @@
 import datetime
 from collections import OrderedDict
 
+from django.db.models import Count, Max
 from django.utils.timezone import now
-from django.db.models import Max, Count
 from django_filters import rest_framework as filters
-from rest_framework import permissions, viewsets, pagination, serializers, status
-from rest_framework.decorators import list_route
+
+from rest_framework import pagination, permissions, serializers, status, viewsets
+from rest_framework.decorators import list_route, action
 from rest_framework.response import Response
 
-from .models import Post
 from tags.models import Tag
+from replies.api.serializers import TreeRepliesSerializer
+
+from .models import Post
+from .permissions import IsAdminAuthorOrReadOnly
 from .serializers import (
     IndexPostListSerializer,
     PopularPostSerializer,
     PostDetailSerializer,
 )
-from .permissions import IsAdminAuthorOrReadOnly
 
 
 class PostPagination(pagination.PageNumberPagination):
@@ -138,4 +141,11 @@ class PostViewSet(viewsets.ModelViewSet):
             latest_reply_time__lt=now()
         ).order_by('-num_replies', '-latest_reply_time')[:10]
         serializer = self.get_serializer(popular_posts, many=True)
+        return Response(serializer.data)
+
+    @action(methods=['get'], detail=True, serializer_class=TreeRepliesSerializer)
+    def replies(self, request, pk=None):
+        post = self.get_object()
+        replies = post.replies.filter(is_public=True, is_removed=False)
+        serializer = self.get_serializer(replies, many=True)
         return Response(serializer.data)

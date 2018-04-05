@@ -1,5 +1,5 @@
-from django_comments.moderation import CommentModerator, Moderator as DjangoCommentModerator
-
+from django_comments.moderation import CommentModerator
+from django_comments.moderation import Moderator as DjangoCommentModerator
 from notifications.signals import notify
 
 
