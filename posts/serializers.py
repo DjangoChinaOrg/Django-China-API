@@ -1,9 +1,10 @@
-from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
+from rest_framework import serializers
+
+from replies.api.serializers import TreeReplySerializer
+from tags.serializers import TagSerializer
 
 from .models import Post
-from tags.serializers import TagSerializer
-from replies.api.serializers import TreeRepliesSerializer
 
 
 class PostSerializer(serializers.HyperlinkedModelSerializer):

@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-
 from django_comments.abstracts import CommentAbstractModel
 from mptt.models import MPTTModel, TreeForeignKey
 

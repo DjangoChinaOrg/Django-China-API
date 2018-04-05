@@ -1,14 +1,13 @@
 from collections import OrderedDict
 
 from django.db.models import Count
-
 from rest_framework import viewsets
-from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 
 from .models import Tag
-from .serializers import TagSerializer
 from .permissions import TagPermissionOrReadOnly
+from .serializers import TagSerializer
 
 
 class TagPagination(PageNumberPagination):

@@ -1,21 +1,23 @@
+from django.db.utils import IntegrityError
+
 from rest_framework import viewsets
 from rest_framework import mixins
+from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.utils import IntegrityError
-
 from django_comments import signals
-from rest_framework import permissions
+from notifications.signals import notify
 from replies.api.serializers import (
     ReplyCreationSerializer,
     FollowSerializer,
 )
-
-from notifications.signals import notify
 from actstream.models import Follow
 from ..models import Reply
 from .permissions import NotSelf
+from replies.api.serializers import (FlatReplySerializer, FollowSerializer,
+                                     ReplyCreationSerializer,
+                                     TreeReplySerializer)
 
 
 class ReplyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
