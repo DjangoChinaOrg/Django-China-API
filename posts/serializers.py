@@ -14,7 +14,7 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
     author = serializers.SerializerMethodField(read_only=True)
 
     reply_count = serializers.SerializerMethodField(read_only=True)
-    tags = TagSerializer(many=True)
+    tags = TagSerializer(many=True, read_only=True)
     latest_reply_time = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -86,14 +86,19 @@ class PopularPostSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PostDetailSerializer(IndexPostListSerializer):
+    """
+    用来显示帖子详情，已经用来创建、修改帖子的序列化器
+    """
     author = serializers.SerializerMethodField(read_only=True)
     replies = serializers.SerializerMethodField(read_only=True)
     participants_count = serializers.SerializerMethodField(read_only=True)
+    content_type = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Post
         fields = (
             'id',
+            'content_type',
             'title',
             'author',
             'views',
@@ -106,9 +111,16 @@ class PostDetailSerializer(IndexPostListSerializer):
             'replies'
         )
 
+    # 验证tag field
+    def validate_tags(self, value):
+        print('123123123')
+        if len(value) > 3:
+            raise serializers.ValidationError("最多可以选择3个标签")
+        return value
+
     def get_content_type(self, value):
         """
-
+        帖子的content_type
         """
         content_type = ContentType.objects.get_for_model(value)
         return content_type.id
