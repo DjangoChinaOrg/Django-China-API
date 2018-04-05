@@ -13,10 +13,10 @@ class NotificationPagination(pagination.PageNumberPagination):
     page_query_param = "page"
 
 
-class NotificationViewSet(mixins.ListModelMixin,
+class NotificationViewSet(mixins.RetrieveModelMixin,
                           mixins.UpdateModelMixin,
-                          mixins.RetrieveModelMixin,
                           mixins.DestroyModelMixin,
+                          mixins.ListModelMixin,
                           viewsets.GenericViewSet):
     serializer_class = NotificationSerializer
     pagination_class = NotificationPagination
@@ -34,3 +34,9 @@ class NotificationViewSet(mixins.ListModelMixin,
 
     def perform_update(self, serializer):
         serializer.update()
+
+    # def update(self, request, *args, **kwargs):
+    #     pk = self.kwargs['pk']
+    #     instance = Notification.objects.filter(id=pk)
+    #     instance.unread = False
+    #     pass
