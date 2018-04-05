@@ -1,12 +1,11 @@
 from allauth.account.views import ConfirmEmailView as AllAuthConfirmEmailView
-from rest_framework_jwt.settings import api_settings
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework_jwt.settings import api_settings
 
 from replies.api.serializers import FlatReplySerializer
-
 from .models import User
 
 

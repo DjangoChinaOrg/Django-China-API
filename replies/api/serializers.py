@@ -2,7 +2,6 @@ from actstream.models import Follow
 from rest_framework import serializers
 
 from replies.models import Reply
-from users.serializers import UserDetailsSerializer
 
 
 class FlatReplySerializer(serializers.ModelSerializer):
