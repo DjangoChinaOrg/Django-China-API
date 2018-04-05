@@ -6,11 +6,12 @@ from django.db.models import Max, Count
 
 from django_filters import rest_framework as filters
 from rest_framework import permissions, viewsets, pagination, serializers
-from rest_framework.decorators import list_route
+from rest_framework.decorators import list_route, action
 from rest_framework.response import Response
 
 from .models import Post
 from tags.models import Tag
+from replies.api.serializers import TreeRepliesSerializer
 from .serializers import PostSerializer
 from .permissions import IsAdminAuthorOrReadOnly
 
@@ -92,7 +93,6 @@ class PostViewSet(viewsets.ModelViewSet):
                         except Exception:
                             raise serializers.ValidationError("标签不存在")
 
-
     @list_route()
     def popular_posts(self, request):
         """
@@ -107,4 +107,11 @@ class PostViewSet(viewsets.ModelViewSet):
             latest_reply_time__lt=now()
         ).order_by('-num_replies', '-latest_reply_time')[:10]
         serializer = self.get_serializer(popular_posts, many=True)
+        return Response(serializer.data)
+
+    @action(methods=['get'], detail=True, serializer_class=TreeRepliesSerializer)
+    def replies(self, request, pk=None):
+        post = self.get_object()
+        replies = post.replies.filter(is_public=True, is_removed=False)
+        serializer = self.get_serializer(replies, many=True)
         return Response(serializer.data)
