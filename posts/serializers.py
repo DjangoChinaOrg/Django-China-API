@@ -112,13 +112,6 @@ class PostDetailSerializer(IndexPostListSerializer):
             'replies'
         )
 
-    # 验证tag field
-    def validate_tags(self, value):
-        print('123123123')
-        if len(value) > 3:
-            raise serializers.ValidationError("最多可以选择3个标签")
-        return value
-
     def get_content_type(self, value):
         """
         帖子的content_type
