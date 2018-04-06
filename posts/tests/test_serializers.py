@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.contenttypes.models import ContentType
 
 from ..models import Post
-from ..serializers import PostSerializer
+from ..serializers import IndexPostListSerializer
 from users.models import User
 from tags.models import Tag
 
@@ -28,10 +28,9 @@ class PostSerializerTests(TestCase):
         self.post.tags.add(self.tag2)
 
     def test_post_serializer_detail(self):
-        serializer = PostSerializer(self.post, context={'request': None})
+        serializer = IndexPostListSerializer(self.post, context={'request': None})
         data = serializer.data
         self.assertEqual(data['id'], self.post.id)
-        self.assertEqual(data['content_type'], ContentType.objects.get_for_model(self.post).id)
         self.assertEqual(data['title'], self.post.title)
         self.assertEqual(data['views'], self.post.views)
         self.assertEqual(data['pinned'], self.post.pinned)

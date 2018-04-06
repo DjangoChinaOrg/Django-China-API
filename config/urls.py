@@ -24,12 +24,11 @@ from rest_framework.routers import DefaultRouter
 
 from posts.views import PostViewSet
 from tags.views import TagViewSet
-from notification_extension.views import NotificationViewSet
+
 
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'tags', TagViewSet)
-router.register(r'notifications', NotificationViewSet, base_name='notifications')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
