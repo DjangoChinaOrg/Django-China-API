@@ -5,7 +5,7 @@ from django.db.models import Count, Max
 from django.utils.timezone import now
 from django_filters import rest_framework as filters
 
-from rest_framework import pagination, permissions, serializers, viewsets
+from rest_framework import pagination, permissions, serializers, status, viewsets
 from rest_framework.decorators import list_route, action
 from rest_framework.response import Response
 
@@ -14,7 +14,11 @@ from replies.api.serializers import TreeRepliesSerializer
 
 from .models import Post
 from .permissions import IsAdminAuthorOrReadOnly
-from .serializers import PostSerializer
+from .serializers import (
+    IndexPostListSerializer,
+    PopularPostSerializer,
+    PostDetailSerializer,
+)
 
 
 class PostPagination(pagination.PageNumberPagination):
@@ -30,9 +34,10 @@ class PostPagination(pagination.PageNumberPagination):
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    # 所有非隐藏的帖子
-    queryset = Post.public.all()
-    serializer_class = PostSerializer
+    queryset = Post.objects.annotate(
+        latest_reply_time=Max('replies__submit_date')
+    ).order_by('-pinned', '-latest_reply_time', '-created_time')
+    serializer_class = IndexPostListSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsAdminAuthorOrReadOnly)
     pagination_class = PostPagination
@@ -42,60 +47,88 @@ class PostViewSet(viewsets.ModelViewSet):
     # 在post-list页面可以按标签字段过滤出特定标签下的帖子
     filter_fields = ('tags',)
 
+    def retrieve(self, request, *args, **kwargs):
+        """
+        重写帖子详情页，这里使用PostDetailSerializer，
+        而不是默认的IndexPostListSerializer
+        """
+        instance = self.get_object()
+        serializer = PostDetailSerializer(instance, context={'request': request})
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        """
+        重写创建帖子方法，使用PostDetailSerializer
+        """
+        serializer = PostDetailSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         """
         保存tags和author，同时验证tag的数量
         tags和author在PostSerializer里是read_only
         """
-        tags = []
         tags_data = self.request.data.get('tags')
+        tags = []
         if not tags_data:
-            raise serializers.ValidationError("请至少选择一个标签")
-        if len(tags_data) > 3:
-            raise serializers.ValidationError("最多可以选择3个标签")
+            raise serializers.ValidationError(detail={'标签': '请选择至少一个标签'})
+        elif len(tags_data) > 3:
+            raise serializers.ValidationError(detail={'标签': '最多可以选择三个标签'})
         for name in tags_data:
             try:
                 tag = Tag.objects.get(name=name)
                 tags.append(tag)
             except Exception:
-                raise serializers.ValidationError("标签不存在")
+                raise serializers.ValidationError(detail={'标签': '标签不存在'})
         serializer.save(author=self.request.user, tags=tags)
 
-    def perform_update(self, serializer):
+    def update(self, request, *args, **kwargs):
         """
-        重写update方法，保证编辑帖子时，标签可以更新
+        更新帖子的方法，包括put和patch，
         """
-        super(PostViewSet, self).perform_update(serializer)
-        tags = []
-        tags_data = self.request.data.get('tags')
-        if self.request.method == 'PUT':
-            if not tags_data:
-                raise serializers.ValidationError("请选择至少一个标签")
-            elif len(tags_data) > 3:
-                raise serializers.ValidationError("最多可以选择三个标签")
-            else:
-                for name in tags_data:
-                    try:
-                        tag = Tag.objects.get(name=name)
-                        tags.append(tag)
-                    except Exception:
-                        raise serializers.ValidationError("标签不存在")
-        elif self.request.method == 'PATCH':
-            if tags_data is not None:
-                if len(tags_data) == 0:
-                    raise serializers.ValidationError("请选择至少一个标签")
-                elif len(tags_data) > 3:
-                    raise serializers.ValidationError("最多可以选择三个标签")
-                else:
-                    for name in tags_data:
-                        try:
-                            tag = Tag.objects.get(name=name)
-                            tags.append(tag)
-                        except Exception:
-                            raise serializers.ValidationError("标签不存在")
+        partial = kwargs.pop('partial', False)
+        tags_data = request.data.get('tags')
+        if partial and tags_data is None:
+            pass
+        elif not tags_data:
+            raise serializers.ValidationError(detail={'标签': '请选择至少一个标签'})
+        elif len(tags_data) > 3:
+            raise serializers.ValidationError(detail={'标签': '最多可以选择三个标签'})
+        instance = self.get_object()
+        serializer = PostDetailSerializer(
+            instance,
+            data=request.data,
+            partial=partial,
+            context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
 
-    @list_route()
-    def popular_posts(self, request):
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        tags_data = self.request.data.get('tags')
+        tags = []
+        if tags_data:
+            for name in tags_data:
+                try:
+                    tag = Tag.objects.get(name=name)
+                    tags.append(tag)
+                except Exception:
+                    raise serializers.ValidationError(detail={'标签': '标签不存在'})
+            serializer.save(tags=tags)
+        else:
+            serializer.save()
+
+    @list_route(serializer_class=PopularPostSerializer)
+    def popular(self, request):
         """
         返回48小时内评论次数最多的帖子
         """

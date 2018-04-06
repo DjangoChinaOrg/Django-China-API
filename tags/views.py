@@ -30,7 +30,7 @@ class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
     permission_classes = (TagPermissionOrReadOnly,)
     pagination_class = TagPagination
-    http_method_names = ['get', 'post']
+    http_method_names = ['get', 'post', 'patch']
 
     def perform_create(self, serializer):
         """

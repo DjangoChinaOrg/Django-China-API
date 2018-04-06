@@ -73,6 +73,7 @@ class PostTestCase(APITestCase):
     def test_post_tags_quantity(self):
         """
         测试帖子标签的数量 大于等于1， 小于等于3
+        以及标签不存在的情况
         测试方法 包括POST, PUT, PATCH
         """
         self.post = Post.objects.create(title='this is a test',
@@ -95,11 +96,19 @@ class PostTestCase(APITestCase):
         data3 = {
             "tags": []
         }
+        data4 = {
+            "title": "test title",
+            "body": "test test test",
+            "tags": ["tag does not exist"]
+        }
         self.client.login(username='test', password='test')
         response = self.client.post(url1, data1, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         response = self.client.post(url1, data2, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.post(url1, data4, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         response = self.client.put(url2, data1, format='json')
@@ -112,6 +121,9 @@ class PostTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         response = self.client.patch(url2, data2, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.patch(url2, data4, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_only_author_admin_can_edit_post(self):
@@ -145,3 +157,58 @@ class PostTestCase(APITestCase):
         self.client.login(username='test2', password='test2')
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_index_post_list(self):
+        """
+        测试首页列表数量，以及分页情况
+        """
+        for i in range(5):
+            self.post = Post.objects.create(title='this is a test',
+                                            body='this is a test',
+                                            author=self.user
+                                            )
+            self.post.tags.add(self.tag1)
+        url = reverse('post-list')
+        self.client.login(username='test', password='test')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 5)
+        self.assertEqual(response.data['next'], None)
+        self.assertEqual(response.data['previous'], None)
+
+        url = reverse('post-list') + '?page=2'
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        for i in range(16):
+            self.post = Post.objects.create(title='this is a test',
+                                            body='this is a test',
+                                            author=self.user
+                                            )
+            self.post.tags.add(self.tag1)
+
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 21)
+        self.assertEqual(response.data['next'], None)
+
+    def test_post_detail(self):
+        """
+        测试帖子详情
+        """
+        self.post = Post.objects.create(title='this is a test',
+                                        body='this is a test',
+                                        author=self.user
+                                        )
+        self.post.tags.add(self.tag1)
+        url = reverse('post-detail', kwargs={'pk': self.post.pk})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], 1)
+        self.assertEqual(response.data['title'], 'this is a test')
+        self.assertEqual(response.data['body'], 'this is a test')
+        self.assertEqual(response.data['author']['nickname'], 'test')
+
+        url = reverse('post-detail', kwargs={'pk': self.post.pk + 1})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
