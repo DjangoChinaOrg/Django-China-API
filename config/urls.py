@@ -3,6 +3,7 @@ from rest_framework_jwt.views import refresh_jwt_token
 from users.views import ConfirmEmailView
 
 """DjangoChina URL Configuration
+
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
 Examples:
@@ -23,13 +24,11 @@ from rest_framework.routers import DefaultRouter
 
 from posts.views import PostViewSet
 from tags.views import TagViewSet
-from notification_extension.views import NotificationViewSet
 
 
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'tags', TagViewSet)
-router.register(r'notifications', NotificationViewSet, base_name='notifications')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

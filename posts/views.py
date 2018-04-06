@@ -92,6 +92,7 @@ class PostViewSet(viewsets.ModelViewSet):
                         except Exception:
                             raise serializers.ValidationError("标签不存在")
 
+
     @list_route()
     def popular_posts(self, request):
         """

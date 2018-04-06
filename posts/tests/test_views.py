@@ -15,9 +15,9 @@ class PostTestCase(APITestCase):
                                              password='test',
                                              nickname='test')
         self.another_user = User.objects.create_user(username='test2',
-                                                     email='test2@test.com',
-                                                     password='test2',
-                                                     nickname='test2')
+                                             email='test2@test.com',
+                                             password='test2',
+                                             nickname='test2')
         self.admin = User.objects.create_superuser(username='admin',
                                                    email='admin@admin.com',
                                                    password='admin123',
