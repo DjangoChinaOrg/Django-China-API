@@ -13,11 +13,11 @@ class Record(models.Model):
         (2, '铜币'),
     )
 
-    created_time = models.DateTimeField("创建时间", auto_now=True)
+    created_time = models.DateTimeField("创建时间", auto_now_add=True)
     reward_type = models.IntegerField("奖励类型", choices=REWARD_TYPE)
     coin_type = models.IntegerField("钱币类型", choices=COIN_TYPE)
     amount = models.PositiveIntegerField("数额")
-    description = models.CharField("描述", max_length=300)
+    description = models.CharField("描述", max_length=300, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="用户")
 
     class Meta:
