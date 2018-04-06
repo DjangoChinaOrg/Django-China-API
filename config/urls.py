@@ -26,7 +26,6 @@ from posts.views import PostViewSet
 from tags.views import TagViewSet
 from notification_extension.views import NotificationViewSet
 
-
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'tags', TagViewSet)
