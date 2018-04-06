@@ -1,5 +1,6 @@
 from allauth.account.views import ConfirmEmailView as AllAuthConfirmEmailView
-from rest_auth.registration.views import LoginView, RegisterView
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from rest_auth.registration.views import LoginView, RegisterView, SocialLoginView
 from rest_framework_jwt.settings import api_settings
 
 
@@ -33,4 +34,12 @@ class RegisterViewCustom(RegisterView):
     """
     注册视图取消authentication_class以此避免CSRF校验
     """
+    authentication_classes = ()
+
+
+class GitHubLogin(SocialLoginView):
+    """
+    GitHub登陆视图
+    """
+    adapter_class = GitHubOAuth2Adapter
     authentication_classes = ()

@@ -27,7 +27,7 @@ from rest_framework.routers import DefaultRouter
 
 from posts.views import PostViewSet
 from tags.views import TagViewSet
-from users.views import LoginViewCustom, RegisterViewCustom
+from users.views import GitHubLogin, LoginViewCustom, RegisterViewCustom
 
 
 router = DefaultRouter()
@@ -43,6 +43,7 @@ urlpatterns = [
         name="account_email_verification_sent"),
     url(r'^rest-auth/registration/$', RegisterViewCustom.as_view(), name='rest_register'),
     url(r'^rest-auth/login/$', LoginViewCustom.as_view(), name='rest_login'),
+    url(r'^rest-auth/login/github/$', GitHubLogin.as_view(), name='github_login'),
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^rest-auth/jwt-refresh/', refresh_jwt_token),
     url(r'^rest-auth/', include('rest_auth.urls')),
