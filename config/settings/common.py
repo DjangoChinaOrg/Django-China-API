@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'posts',
     'replies',
     'tags',
-    'balance'
+    'balance',
+    'notification_extension',
 ]
 
 COMMENTS_APP = 'replies'
@@ -185,3 +186,6 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = True
 LOGIN_ON_EMAIL_CONFIRMATION = True
+
+# NOTIFICATIONS 软删除
+NOTIFICATIONS_SOFT_DELETE = True
