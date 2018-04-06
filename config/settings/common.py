@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.gitlab',
     'rest_auth.registration',
     'django_comments',
     'actstream',
@@ -155,10 +157,12 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
     ),
 }
 
-# django-rest-auth settings
+# django-allauth settings
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
@@ -167,6 +171,7 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+# django-rest-auth settings
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserDetailsSerializer',
 }
@@ -185,7 +190,6 @@ if DEBUG:
     JWT_AUTH['JWT_EXPIRATION_DELTA'] = datetime.timedelta(days=1)
 
 # django-all-auth setting
-SITE_ID = 1
 REST_USE_JWT = True
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True

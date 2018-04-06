@@ -1,4 +1,5 @@
 from allauth.account.views import ConfirmEmailView as AllAuthConfirmEmailView
+from rest_auth.registration.views import LoginView, RegisterView
 from rest_framework_jwt.settings import api_settings
 
 
@@ -19,3 +20,17 @@ class ConfirmEmailView(AllAuthConfirmEmailView):
         token = jwt_encode_handler(payload)
         response.set_cookie('JWT', token)
         return response
+
+
+class LoginViewCustom(LoginView):
+    """
+    登陆视图取消authentication_class以此避免CSRF校验
+    """
+    authentication_classes = ()
+
+
+class RegisterViewCustom(RegisterView):
+    """
+    注册视图取消authentication_class以此避免CSRF校验
+    """
+    authentication_classes = ()

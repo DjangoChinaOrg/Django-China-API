@@ -64,13 +64,11 @@ class UserRegistrationSerializer(RegisterSerializer):
 
     def save(self, request):
         """
-        改写父类的save方法，自动将username存入到nickname域内
-        同时检测并存入用户的注册IP地址
+        改写父类的save方法，检测并存入用户的注册IP地址
         """
         adapter = get_adapter()
         user = adapter.new_user(request)
         self.cleaned_data = self.get_cleaned_data()
-        user.nickname = self.cleaned_data.get('username')
         ip = get_ip_address_from_request(request)
         if ip:
             user.ip_joined = ip

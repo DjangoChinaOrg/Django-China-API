@@ -36,6 +36,9 @@ class User(AbstractUser):
                 pad=10
             )
             self.mugshot.save('default_mugshot.png', ContentFile(image_byte_array), save=False)
+        if not self.pk and not self.nickname:
+            # 自动将username存入到nickname域内
+            self.nickname = self.username
         super(User, self).save(*args, **kwargs)
 
 
