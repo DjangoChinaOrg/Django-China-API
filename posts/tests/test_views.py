@@ -189,7 +189,7 @@ class PostTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.client.logout()
 
-        #管理员隐藏帖子
+        # 管理员隐藏帖子
         self.client.login(username='admin', password='admin123')
         response = self.client.patch(url, data4, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
