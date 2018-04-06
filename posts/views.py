@@ -34,7 +34,7 @@ class PostPagination(pagination.PageNumberPagination):
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.annotate(
+    queryset = Post.public.annotate(
         latest_reply_time=Max('replies__submit_date')
     ).order_by('-pinned', '-latest_reply_time', '-created_time')
     serializer_class = IndexPostListSerializer
@@ -114,8 +114,20 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_update(self, serializer):
+        """
+        执行更新
+        """
         tags_data = self.request.data.get('tags')
         tags = []
+        hidden = self.request.data.get('hidden')
+        pinned = self.request.data.get('pinned')
+        highlighted = self.request.data.get('highlighted')
+        if hidden is not None:
+            serializer.save(hidden=hidden)
+        if pinned is not None:
+            serializer.save(pinned=pinned)
+        if highlighted is not None:
+            serializer.save(highlighted=highlighted)
         if tags_data:
             for name in tags_data:
                 try:
