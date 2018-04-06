@@ -1,23 +1,24 @@
-from rest_framework.generics import (
-    CreateAPIView,
-    ListAPIView,
-)
+from actstream.models import Follow
+from django.db.utils import IntegrityError
 from django_comments import signals
-from rest_framework import permissions
-from replies.api.serializers import (
-    ReplyCreationSerializer,
-    TreeReplySerializer,
-    FlatReplySerializer,
-    FollowSerializer,
-)
-
-from replies.models import Reply
 from notifications.signals import notify
+from rest_framework import mixins
+from rest_framework import permissions
+from rest_framework import status
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from replies.api.serializers import (FollowSerializer,
+                                     ReplyCreationSerializer)
+from .permissions import NotSelf
+from ..models import Reply
 
 
-class ReplyCreateView(CreateAPIView):
+class ReplyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = ReplyCreationSerializer
     permission_classes = [permissions.IsAuthenticated, ]
+    queryset = Reply.objects.filter(is_public=True, is_removed=False)
 
     def perform_create(self, serializer):
         parent_reply = serializer.validated_data.get('parent')
@@ -30,33 +31,41 @@ class ReplyCreateView(CreateAPIView):
             request=self.request
         )
 
+    @action(
+        methods=['post', 'delete'],
+        detail=True,
+        permission_classes=[NotSelf, permissions.IsAuthenticated],
+        serializer_class=FollowSerializer,
+    )
+    def like(self, request, pk=None):
+        reply = self.get_object()
 
-class FlatReplyListView(ListAPIView):
-    """
-    仅仅用于测试，并不需要对外暴露此 API
-    """
-    queryset = Reply.objects.all()
-    serializer_class = FlatReplySerializer
-
-
-class TreeReplyListView(ListAPIView):
-    """
-    仅仅用于测试，并不需要对外暴露此 API
-    """
-    queryset = Reply.objects.filter(parent__isnull=True)
-    serializer_class = TreeReplySerializer
-
-
-class ReplyLikeCreateView(CreateAPIView):
-    serializer_class = FollowSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
-
-    def perform_create(self, serializer):
-        follow = serializer.save(user=self.request.user)
-
-        # 创建相应的 notification
-        data = {
-            'recipient': follow.follow_object.user,
-            'verb': 'like',
-        }
-        notify.send(sender=self.request.user, **data)
+        if self.request.method == 'POST':
+            try:
+                follow = Follow.objects.create(
+                    user=self.request.user,
+                    content_type=reply.ctype,
+                    object_id=reply.id,
+                    flag='like',
+                )
+            except IntegrityError:
+                return Response(
+                    {'detail': '已经赞过'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer = FollowSerializer(follow)
+            # 创建相应的 notification
+            data = {
+                'recipient': reply.user,
+                'verb': 'like',
+            }
+            notify.send(sender=self.request.user, **data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        elif self.request.method == 'DELETE':
+            Follow.objects.filter(
+                user=self.request.user,
+                content_type=reply.ctype_id,
+                object_id=reply.id,
+                flag='like'
+            ).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,7 +1,5 @@
-from ipware import get_client_ip
 from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
-from django.utils.translation import ugettext_lazy as _
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 

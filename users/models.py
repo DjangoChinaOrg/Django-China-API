@@ -1,9 +1,9 @@
 import os
 
-from django.db import models
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.signals import user_logged_in
+from django.db import models
 
 from .mugshot import Avatar
 from .utils import get_ip_address_from_request
