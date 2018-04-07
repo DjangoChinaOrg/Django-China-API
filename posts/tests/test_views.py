@@ -128,7 +128,8 @@ class PostTestCase(APITestCase):
 
     def test_only_author_admin_can_edit_post(self):
         """
-        测试只有管理员和作者可以编辑帖子
+        测试只有管理员和作者可以编辑帖子,
+        同时作者无法修改hidden, highlighted, pinned字段
         """
         self.post = Post.objects.create(title='this is a test',
                                         body='this is a test',
@@ -136,27 +137,69 @@ class PostTestCase(APITestCase):
                                         )
         self.post.tags.add(self.tag1)
         url = reverse('post-detail', kwargs={'pk': self.post.pk})
-        data = {
+        data1 = {
             "title": "hello",
             "body": "hello world",
             "tags": ['test tag1', 'test tag2', 'test tag3']
         }
+        data2 = {
+            "title": "hello",
+            "body": "hello world",
+            "tags": ['test tag1', 'test tag2', 'test tag3'],
+            "pinned": True,
+            "highlighted": True
+        }
+        data3 = {
+            "pinned": False,
+            "highlighted": False
+        }
+        data4 = {
+            "hidden": True,
+        }
         # 管理员
         self.client.login(username='admin', password='admin123')
-        response = self.client.put(url, data, format='json')
+        response = self.client.put(url, data1, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # 测试管理 置顶, 加精帖子
+        response = self.client.put(url, data2, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Post.objects.get().pinned, True)
+        self.assertEqual(Post.objects.get().highlighted, True)
+        response = self.client.patch(url, data3, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Post.objects.get().pinned, False)
         self.client.logout()
 
         # 作者
         self.client.login(username='test', password='test')
-        response = self.client.put(url, data, format='json')
+        response = self.client.put(url, data1, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # 作者加精 置顶 隐藏
+        response = self.client.put(url, data2, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Post.objects.get().pinned, False)
+        self.assertEqual(Post.objects.get().highlighted, False)
+        response = self.client.patch(url, data4, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Post.objects.get().hidden, False)
         self.client.logout()
 
         # 其他用户
         self.client.login(username='test2', password='test2')
-        response = self.client.put(url, data, format='json')
+        response = self.client.put(url, data1, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.put(url, data2, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.patch(url, data3, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.client.logout()
+
+        # 管理员隐藏帖子
+        self.client.login(username='admin', password='admin123')
+        response = self.client.patch(url, data4, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.get(reverse('post-list'), format='json')
+        self.assertEqual(response.data['count'], 0)
 
     def test_index_post_list(self):
         """
