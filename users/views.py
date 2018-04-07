@@ -2,6 +2,8 @@ import math
 import random
 
 from allauth.account.views import ConfirmEmailView as AllAuthConfirmEmailView
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from rest_auth.registration.views import LoginView, RegisterView, SocialLoginView
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -34,6 +36,28 @@ class ConfirmEmailView(AllAuthConfirmEmailView):
         token = jwt_encode_handler(payload)
         response.set_cookie('JWT', token)
         return response
+
+
+class LoginViewCustom(LoginView):
+    """
+    登陆视图取消authentication_class以此避免CSRF校验
+    """
+    authentication_classes = ()
+
+
+class RegisterViewCustom(RegisterView):
+    """
+    注册视图取消authentication_class以此避免CSRF校验
+    """
+    authentication_classes = ()
+
+
+class GitHubLogin(SocialLoginView):
+    """
+    GitHub登陆视图
+    """
+    adapter_class = GitHubOAuth2Adapter
+    authentication_classes = ()
 
 
 class UserViewSets(viewsets.GenericViewSet):
