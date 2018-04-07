@@ -117,17 +117,22 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         执行更新
         """
-        tags_data = self.request.data.get('tags')
+        data = {}
         tags = []
-        hidden = self.request.data.get('hidden')
-        pinned = self.request.data.get('pinned')
-        highlighted = self.request.data.get('highlighted')
-        if hidden is not None:
-            serializer.save(hidden=hidden)
-        if pinned is not None:
-            serializer.save(pinned=pinned)
-        if highlighted is not None:
-            serializer.save(highlighted=highlighted)
+        # 标签，隐藏，置顶，加精这些字段都是read_only，
+        # 因此这些字段在修改时需要手动来保存
+        tags_data = self.request.data.get('tags')
+        # 如果用户不是管理，则无需提取这些字段
+        if self.request.user.is_staff:
+            hidden = self.request.data.get('hidden')
+            pinned = self.request.data.get('pinned')
+            highlighted = self.request.data.get('highlighted')
+            if hidden is not None:
+                data['hidden'] = hidden
+            if pinned is not None:
+                data['pinned'] = pinned
+            if highlighted is not None:
+                data['highlighted'] = highlighted
         if tags_data:
             for name in tags_data:
                 try:
@@ -135,9 +140,8 @@ class PostViewSet(viewsets.ModelViewSet):
                     tags.append(tag)
                 except Exception:
                     raise serializers.ValidationError(detail={'标签': '标签不存在'})
-            serializer.save(tags=tags)
-        else:
-            serializer.save()
+            data['tags'] = tags
+        serializer.save(**data)
 
     @list_route(serializer_class=PopularPostSerializer)
     def popular(self, request):

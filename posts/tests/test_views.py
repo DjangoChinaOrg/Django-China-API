@@ -151,6 +151,7 @@ class PostTestCase(APITestCase):
         }
         data3 = {
             "pinned": False,
+            "highlighted": False
         }
         data4 = {
             "hidden": True,
@@ -173,10 +174,14 @@ class PostTestCase(APITestCase):
         self.client.login(username='test', password='test')
         response = self.client.put(url, data1, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # 作者加精 置顶 隐藏
         response = self.client.put(url, data2, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        response = self.client.patch(url, data3, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Post.objects.get().pinned, False)
+        self.assertEqual(Post.objects.get().highlighted, False)
+        response = self.client.patch(url, data4, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Post.objects.get().hidden, False)
         self.client.logout()
 
         # 其他用户
