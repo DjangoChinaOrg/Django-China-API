@@ -122,3 +122,60 @@ class UserViewSetTestCase(test.APITestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Record.objects.count(), 2)
+
+    def test_user_can_get_non_hidden_posts(self):
+        Post.objects.create(
+            title='test',
+            author=self.user,
+        )
+
+        Post.objects.create(
+            title='test2',
+            author=self.user,
+        )
+
+        Post.objects.create(
+            title='test3',
+            author=self.user,
+        )
+
+        Post.objects.create(
+            title='test4',
+            author=self.user,
+            hidden=True
+        )
+
+        url = reverse('user-posts', kwargs={'pk': self.user.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+
+    def test_user_can_only_get_self_hidden_posts(self):
+        Post.objects.create(
+            title='test',
+            author=self.user,
+        )
+
+        Post.objects.create(
+            title='test',
+            author=self.user,
+            hidden=True
+        )
+
+        Post.objects.create(
+            title='test',
+            author=self.another_user,
+            hidden=True
+        )
+
+        url = reverse('user-posts', kwargs={'pk': self.user.id})
+        response = self.client.get(url, {'hidden': 'true'})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        self.client.login(username='test', password='test')
+        response = self.client.get(url, {'hidden': 'true'})
+        self.assertEqual(len(response.data), 1)
+
+        other_url = reverse('user-posts', kwargs={'pk': self.another_user.id})
+        response = self.client.get(other_url, {'hidden': 'true'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
