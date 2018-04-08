@@ -32,12 +32,14 @@ from users.views import (
     RegisterViewCustom,
     UserViewSets,
 )
+from notification_extension.views import NotificationViewSet
 
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'tags', TagViewSet)
 router.register(r'replies', ReplyViewSet)
 router.register(r'users', UserViewSets)
+router.register(r'notifications', NotificationViewSet, base_name='notifications')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

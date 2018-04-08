@@ -4,6 +4,7 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import action
 
 from .serializers import NotificationSerializer
 from .filters import NotificationFilter
@@ -44,4 +45,9 @@ class NotificationViewSet(mixins.RetrieveModelMixin,
         instance = Notification.objects.get(id=pk)
         instance.unread = False
         instance.save()
+        return Response(status=status.HTTP_202_ACCEPTED)
+
+    @action(methods=['post'], detail=False)
+    def mark_all_as_read(self, request):
+        Notification.objects.filter(recipient=request.user).mark_all_as_read(recipient=request.user)
         return Response(status=status.HTTP_202_ACCEPTED)
