@@ -1,12 +1,22 @@
+import math
+import random
+
 from allauth.account.views import ConfirmEmailView as AllAuthConfirmEmailView
-from rest_framework import viewsets
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from rest_auth.registration.views import LoginView, RegisterView, SocialLoginView
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_jwt.settings import api_settings
 
+from balance.api.permissions import IsCurrentUser, OncePerDay
+from balance.api.serializers import BalanceSerializer
+from balance.models import Record
 from replies.api.serializers import FlatReplySerializer
+
 from .models import User
+from .serializers import UserDetailsSerializer
 
 
 class ConfirmEmailView(AllAuthConfirmEmailView):
@@ -28,9 +38,32 @@ class ConfirmEmailView(AllAuthConfirmEmailView):
         return response
 
 
+class LoginViewCustom(LoginView):
+    """
+    登陆视图取消authentication_class以此避免CSRF校验
+    """
+    authentication_classes = ()
+
+
+class RegisterViewCustom(RegisterView):
+    """
+    注册视图取消authentication_class以此避免CSRF校验
+    """
+    authentication_classes = ()
+
+
+class GitHubLogin(SocialLoginView):
+    """
+    GitHub登陆视图
+    """
+    adapter_class = GitHubOAuth2Adapter
+    authentication_classes = ()
+
+
 class UserViewSets(viewsets.GenericViewSet):
     queryset = User.objects.all()
     permission_classes = [AllowAny, ]
+    serializer_class = UserDetailsSerializer
 
     @action(methods=['get'], detail=True)
     def replies(self, request, pk=None):
@@ -38,3 +71,28 @@ class UserViewSets(viewsets.GenericViewSet):
         replies = user.reply_comments.filter(is_public=True, is_removed=False)
         serializer = FlatReplySerializer(replies, many=True)
         return Response(serializer.data)
+
+    @action(
+        methods=['post'],
+        detail=True,
+        permission_classes=[permissions.IsAuthenticated, OncePerDay, IsCurrentUser]
+    )
+    def checkin(self, request, pk=None):
+        user = self.get_object()
+
+        # 生成随机奖励
+        random_amount = abs(random.gauss(10, 5))
+        random_amount = math.ceil(random_amount)
+
+        if random_amount == 0:
+            random_amount += 1
+
+        record = Record.objects.create(
+            reward_type=0,
+            coin_type=2,
+            amount=random_amount,
+            description='',
+            user=user
+        )
+        serializer = BalanceSerializer(record)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

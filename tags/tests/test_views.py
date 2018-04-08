@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 
 from tags.models import Tag
 from users.models import User
+from posts.models import Post
 
 
 class TagTests(APITestCase):
@@ -72,3 +73,37 @@ class TagTests(APITestCase):
         self.client.login(username='admin', password='admin')
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_popular_tags(self):
+        """
+        测试热门标签
+        """
+        self.post1 = Post.objects.create(title='this is a test1',
+                                        body='this is a test',
+                                        author=self.admin
+                                        )
+        self.post2 = Post.objects.create(title='this is a test2',
+                                        body='this is a test',
+                                        author=self.admin
+                                        )
+        self.post3 = Post.objects.create(title='this is a test3',
+                                         body='this is a test',
+                                         author=self.admin
+                                         )
+        self.tag1 = Tag.objects.create(name='test tag1',
+                                      creator=self.admin
+                                      )
+        self.tag2 = Tag.objects.create(name='test tag2',
+                                      creator=self.admin
+                                      )
+        self.tag3 = Tag.objects.create(name='test tag3',
+                                      creator=self.admin
+                                      )
+        self.post1.tags.add(self.tag1, self.tag2)
+        self.post2.tags.add(self.tag2, self.tag3, self.tag1)
+        self.post3.tags.add(self.tag2)
+        url = reverse('tag-popular')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data[0]['name'], 'test tag2')
+        self.assertEqual(response.data[1]['name'], 'test tag1')
+        self.assertEqual(response.data[2]['name'], 'test tag3')
