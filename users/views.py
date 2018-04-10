@@ -3,6 +3,7 @@ import random
 
 from allauth.account.views import ConfirmEmailView as AllAuthConfirmEmailView
 from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from django.db.models import Sum
 from rest_auth.registration.views import LoginView, RegisterView, SocialLoginView
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -114,3 +115,9 @@ class UserViewSets(viewsets.GenericViewSet):
         )
         serializer = BalanceSerializer(record)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['get'], detail=True)
+    def balance(self, request, pk=None):
+        user = self.get_object()
+        user_treasure = user.record_set.values('coin_type').annotate(Sum('amount'))
+        return Response(user_treasure)

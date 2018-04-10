@@ -179,3 +179,49 @@ class UserViewSetTestCase(test.APITestCase):
         other_url = reverse('user-posts', kwargs={'pk': self.another_user.id})
         response = self.client.get(other_url, {'hidden': 'true'})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_can_get_user_treasure(self):
+        Record.objects.create(
+            reward_type=0,
+            coin_type=2,
+            amount=10,
+            user=self.user,
+        )
+        Record.objects.create(
+            reward_type=0,
+            coin_type=2,
+            amount=25,
+            user=self.user,
+        )
+        Record.objects.create(
+            reward_type=0,
+            coin_type=1,
+            amount=10,
+            user=self.user,
+        )
+        Record.objects.create(
+            reward_type=0,
+            coin_type=1,
+            amount=35,
+            user=self.user,
+        )
+        Record.objects.create(
+            reward_type=0,
+            coin_type=0,
+            amount=35,
+            user=self.user,
+        )
+        Record.objects.create(
+            reward_type=0,
+            coin_type=0,
+            amount=35,
+            user=self.another_user,
+        )
+        url = reverse('user-balance', kwargs={'pk': self.user.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(list(response.data), [
+            {'coin_type': 0, 'amount__sum': 35},
+            {'coin_type': 1, 'amount__sum': 45},
+            {'coin_type': 2, 'amount__sum': 35},
+        ])
