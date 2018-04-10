@@ -1,7 +1,9 @@
 from allauth.account.adapter import get_adapter
+from allauth.account.models import EmailAddress
 from allauth.account.utils import setup_user_email
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
+from rest_framework.fields import CurrentUserDefault
 
 from .models import User
 from .utils import get_ip_address_from_request
@@ -74,3 +76,15 @@ class UserRegistrationSerializer(RegisterSerializer):
         self.custom_signup(request, user)
         setup_user_email(request, user, [])
         return user
+
+
+class EmailAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailAddress
+        fields = (
+            'user',
+            'email',
+            'verified',
+            'primary',
+        )
+        read_only_fields = ('user', 'verified', 'primary')

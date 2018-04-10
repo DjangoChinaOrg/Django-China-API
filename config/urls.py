@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from allauth.account.views import email_verification_sent
-
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
@@ -26,18 +25,15 @@ from posts.views import PostViewSet
 from replies.api.views import ReplyViewSet
 from tags.views import TagViewSet
 from users.views import (
-    ConfirmEmailView,
-    GitHubLogin,
-    LoginViewCustom,
-    RegisterViewCustom,
-    UserViewSets,
-)
+    ConfirmEmailView, EmailAddressViewSet, GitHubLogin, LoginViewCustom, RegisterViewCustom,
+    UserViewSets)
 
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'tags', TagViewSet)
 router.register(r'replies', ReplyViewSet)
 router.register(r'users', UserViewSets)
+router.register(r'users/email', EmailAddressViewSet,base_name='email')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

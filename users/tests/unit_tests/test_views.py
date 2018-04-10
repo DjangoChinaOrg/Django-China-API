@@ -1,3 +1,4 @@
+from allauth.account.models import EmailAddress
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.utils.timezone import now, timedelta
@@ -225,3 +226,153 @@ class UserViewSetTestCase(test.APITestCase):
             {'coin_type': 1, 'amount__sum': 45},
             {'coin_type': 2, 'amount__sum': 35},
         ])
+
+
+class EmailAddressViewSetTestCase(test.APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='test',
+            email='test@test.com',
+            password='test',
+            nickname='test'
+        )
+
+        self.another_user = User.objects.create_user(
+            username='another',
+            email='another@test.com',
+            password='another',
+            nickname='another'
+        )
+
+        self.email = EmailAddress.objects.create(
+            user=self.user,
+            email=self.user.email,
+            verified=True,
+            primary=True
+        )
+
+        self.unverified_email = EmailAddress.objects.create(
+            user=self.user,
+            email='unverified@test.com',
+            verified=False,
+            primary=False
+        )
+
+        self.another_user_email = EmailAddress.objects.create(
+            user=self.another_user,
+            email=self.another_user.email,
+            verified=True,
+            primary=True
+        )
+
+    def test_anonymous_user_cannot_operate_email(self):
+        list_url = reverse('email-list')
+        retrieve_url = reverse('email-detail', kwargs={'pk': self.email.id})
+        set_primary_url = reverse('email-set-primary', kwargs={'pk': self.email.id})
+        reverify_url = reverse('email-reverify', kwargs={'pk': self.email.id})
+
+        response = self.client.get(list_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.get(retrieve_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.post(list_url, data={
+            'user': self.user,
+            'email': 'new@email.com',
+            'verified': True,
+            'primary': True
+        })
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.delete(list_url, data={'email': self.user.email})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.post(set_primary_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.get(reverify_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_user_can_get_self_email(self):
+        url = reverse('email-list')
+        self.client.login(username='test', password='test')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertTrue(
+            all([ret['user'] == self.user.id for ret in response.data])
+        )
+
+    def test_user_cannnot_get_others_email(self):
+        url = reverse('email-detail', kwargs={'pk': self.another_user_email.id})
+        self.client.login(username='test', password='test')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_can_add_email(self):
+        url = reverse('email-list')
+        self.client.login(username='test', password='test')
+        response = self.client.post(url, data={
+            'user': self.user,
+            'email': 'new@email.com',
+            'verified': True,
+            'primary': True
+        })
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(self.user.emailaddress_set.count(), 3)
+
+    def test_user_cannot_set_unverified_email_to_primary(self):
+        url = reverse('email-set-primary', kwargs={'pk': self.unverified_email.id})
+        self.client.login(username='test', password='test')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_user_can_set_verified_email_to_primary(self):
+        verified_unprimary_email = EmailAddress.objects.create(
+            user=self.user,
+            email='verified_unprimary_email@test.com',
+            verified=True,
+            primary=False
+        )
+        url = reverse('email-set-primary', kwargs={'pk': verified_unprimary_email.id})
+        self.client.login(username='test', password='test')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # 新的 primary email 设置成功
+        new_primary_email = EmailAddress.objects.get(pk=verified_unprimary_email.id)
+        self.assertTrue(new_primary_email.primary)
+
+        # 旧的 primary email 被设置为非 primary email
+        old_primary_email = EmailAddress.objects.get(pk=self.email.id)
+        self.assertFalse(old_primary_email.primary)
+
+    def test_can_delete_non_primary_email(self):
+        url = reverse('email-detail', kwargs={'pk': self.unverified_email.id})
+        self.client.login(username='test', password='test')
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(self.user.emailaddress_set.count(), 1)
+
+    def test_user_cannot_delete_primary_email(self):
+        url = reverse('email-detail', kwargs={'pk': self.email.id})
+        self.client.login(username='test', password='test')
+        response = self.client.delete(url, data={'email': self.email.email})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(self.user.emailaddress_set.count(), 2)
+
+    def test_user_cannot_delete_others_email(self):
+        url = reverse('email-detail', kwargs={'pk': self.another_user_email.id})
+        self.client.login(username='test', password='test')
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(self.another_user.emailaddress_set.count(), 1)
+
+    def test_user_can_reverify_email(self):
+        url = reverse('email-reverify', kwargs={'pk': self.email.id})
+        self.client.login(username='test', password='test')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
