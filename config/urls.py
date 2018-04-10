@@ -24,9 +24,7 @@ from rest_framework_jwt.views import refresh_jwt_token
 from posts.views import PostViewSet
 from replies.api.views import ReplyViewSet
 from tags.views import TagViewSet
-from users.views import (
-    ConfirmEmailView, EmailAddressViewSet, GitHubLogin, LoginViewCustom, RegisterViewCustom,
-    UserViewSets)
+from users.views import EmailAddressViewSet, LoginViewCustom, UserViewSets
 
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
@@ -37,17 +35,9 @@ router.register(r'users/email', EmailAddressViewSet,base_name='email')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^rest-auth/registration/account-confirm-email/(?P<key>[-:\w]+)/$',
-        ConfirmEmailView.as_view(),
-        name='account_confirm_email'),
-    url(r"^rest-auth/confirm-email/$", email_verification_sent,
-        name="account_email_verification_sent"),
-    url(r'^rest-auth/registration/$', RegisterViewCustom.as_view(), name='rest_register'),
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^rest-auth/login/$', LoginViewCustom.as_view(), name='rest_login'),
-    url(r'^rest-auth/login/github/$', GitHubLogin.as_view(), name='github_login'),
-    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^rest-auth/jwt-refresh/', refresh_jwt_token),
-    url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^api-auth/', include('rest_framework.urls')),  # 仅仅用于测试
     url(r'^', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
