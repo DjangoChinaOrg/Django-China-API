@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'replies',
     'tags',
     'balance',
-    'notification_extension'
+    'notification_extension',
 ]
 
 COMMENTS_APP = 'replies'
