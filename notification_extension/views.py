@@ -44,12 +44,12 @@ class NotificationViewSet(mixins.RetrieveModelMixin,
         pk = self.kwargs['pk']
         instance = Notification.objects.get(id=pk)
         if instance.recipient != request.user:
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response(status=status.HTTP_403_FORBIDDEN)
         instance.unread = False
         instance.save()
-        return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=False)
     def mark_all_as_read(self, request):
         Notification.objects.filter(recipient=request.user).mark_all_as_read(recipient=request.user)
-        return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_200_OK)

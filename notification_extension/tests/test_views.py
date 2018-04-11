@@ -123,7 +123,7 @@ class NotificationViewSetsTestCase(test.APITestCase):
         url = reverse('notifications-detail', kwargs={'pk': notification.id})
         self.client.login(username='test', password='test')
         response = self.client.put(url)
-        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         notification = Notification.objects.first()
         self.assertEqual(notification.unread, False)
 
@@ -136,7 +136,7 @@ class NotificationViewSetsTestCase(test.APITestCase):
         url = reverse('notifications-detail', kwargs={'pk': notification.id})
         self.client.login(username='test', password='test')
         response = self.client.put(url)
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         notification = Notification.objects.first()
         self.assertEqual(notification.unread, True)
 
@@ -175,7 +175,7 @@ class NotificationViewSetsTestCase(test.APITestCase):
         url = reverse('notifications-mark-all-as-read')
         self.client.login(username='test', password='test')
         response = self.client.post(url)
-        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         notification = Notification.objects.first()
         self.assertEqual(notification.unread, False)  # 验证已读
 
@@ -188,6 +188,6 @@ class NotificationViewSetsTestCase(test.APITestCase):
         url = reverse('notifications-mark-all-as-read')
         self.client.login(username='test', password='test')
         response = self.client.post(url)
-        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         notification = Notification.objects.first()
         self.assertEqual(notification.unread, True)  # 其他用户的通知 验证未读
