@@ -43,6 +43,8 @@ class NotificationViewSet(mixins.RetrieveModelMixin,
     def update(self, request, *args, **kwargs):
         pk = self.kwargs['pk']
         instance = Notification.objects.get(id=pk)
+        if instance.recipient != request.user:
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
         instance.unread = False
         instance.save()
         return Response(status=status.HTTP_202_ACCEPTED)
