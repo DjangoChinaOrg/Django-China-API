@@ -26,7 +26,7 @@ ALLOWED_HOSTS = []
 
 SITE_ID = 1
 
-LOGIN_URL = '/'
+LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
 # Application definition
