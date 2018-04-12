@@ -10,5 +10,7 @@ pycodestyle==2.3.1
 djangorestframework==3.8.0
 pillow==5.0.0
 django-filter==1.1.0
+markdown==2.6.11
+coreapi==2.3.3
 
 git+https://github.com/zmrenwu/django-activity-stream.git@master#egg=django-activity-stream
