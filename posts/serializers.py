@@ -1,9 +1,8 @@
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
-from replies.api.serializers import TreeRepliesSerializer
+from replies.serializers import TreeRepliesSerializer
 from tags.serializers import TagSerializer
-
 from .models import Post
 
 

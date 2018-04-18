@@ -1,15 +1,14 @@
 from allauth.account.models import EmailAddress
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.utils.timezone import now, timedelta
+from django.utils.timezone import timedelta
 from rest_framework import status, test
 from rest_framework.reverse import reverse
 
 from balance.models import Record
 from posts.models import Post
-from replies.api.serializers import FlatReplySerializer
 from replies.models import Reply
-
+from replies.serializers import FlatReplySerializer
 from ...models import User
 
 

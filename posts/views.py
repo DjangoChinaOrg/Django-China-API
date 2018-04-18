@@ -3,14 +3,12 @@ import datetime
 from django.db.models import Count, Max
 from django.utils.timezone import now
 from django_filters import rest_framework as filters
-
-from rest_framework import permissions, serializers, status, viewsets, generics, mixins
+from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from replies.serializers import TreeRepliesSerializer
 from tags.models import Tag
-from replies.api.serializers import TreeRepliesSerializer
-
 from .models import Post
 from .permissions import IsAdminAuthorOrReadOnly
 from .serializers import (
