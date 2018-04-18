@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
@@ -47,10 +49,10 @@ class CustomPageNumberPagination(PageNumberPagination):
         return list(self.page)
 
     def get_paginated_response(self, data):
-        return Response({
-            'page_size': self.page_size,
-            'current_page': self.page.number,
-            'last_page': self.page.paginator.num_pages,
-            'count': self.page.paginator.count,
-            'data': data
-        })
+        return Response(OrderedDict([
+            ('page_size', self.page_size),
+            ('current_page', self.page.number),
+            ('last_page', self.page.paginator.num_pages),
+            ('count', self.page.paginator.count),
+            ('data', data)
+        ]))
