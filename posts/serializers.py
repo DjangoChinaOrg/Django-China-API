@@ -12,11 +12,11 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
     首页帖子列表序列化器
     """
     # TODO: 等待userserializer的定义，返回更详细的author信息
-    author = serializers.SerializerMethodField(read_only=True)
+    author = serializers.SerializerMethodField()
 
-    reply_count = serializers.SerializerMethodField(read_only=True)
+    reply_count = serializers.SerializerMethodField()
     tags = TagSerializer(many=True, read_only=True)
-    latest_reply_time = serializers.SerializerMethodField(read_only=True)
+    latest_reply_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -68,7 +68,7 @@ class PopularPostSerializer(serializers.HyperlinkedModelSerializer):
     热门帖子序列化器
     """
     # TODO: 返回user_url 需要实现了user-deail
-    author = serializers.SerializerMethodField(read_only=True)
+    author = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -90,10 +90,10 @@ class PostDetailSerializer(IndexPostListSerializer):
     """
     用来显示帖子详情，已经用来创建、修改帖子的序列化器
     """
-    author = serializers.SerializerMethodField(read_only=True)
-    replies = serializers.SerializerMethodField(read_only=True)
-    participants_count = serializers.SerializerMethodField(read_only=True)
-    content_type = serializers.SerializerMethodField(read_only=True)
+    author = serializers.SerializerMethodField()
+    replies = serializers.SerializerMethodField()
+    participants_count = serializers.SerializerMethodField()
+    content_type = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
