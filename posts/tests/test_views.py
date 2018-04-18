@@ -216,8 +216,6 @@ class PostTestCase(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 5)
-        self.assertEqual(response.data['next'], None)
-        self.assertEqual(response.data['previous'], None)
 
         url = reverse('post-list') + '?page=2'
         response = self.client.get(url, format='json')
@@ -233,7 +231,6 @@ class PostTestCase(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 21)
-        self.assertEqual(response.data['next'], None)
 
     def test_post_detail(self):
         """
