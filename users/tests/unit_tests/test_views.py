@@ -299,9 +299,9 @@ class EmailAddressViewSetTestCase(test.APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 5)
         self.assertTrue(
-            all([ret['user'] == self.user.id for ret in response.data])
+            all([ret['user'] == self.user.id for ret in response.data['data']])
         )
 
     def test_user_cannnot_get_others_email(self):
