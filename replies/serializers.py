@@ -42,6 +42,8 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
     """
     仅用于 reply 的创建
     """
+    parent_user = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
 
     class Meta:
         model = Reply
@@ -55,6 +57,8 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
             'ip_address',
             'is_public',
             'is_removed',
+            'user',
+            'parent_user',
         )
         read_only_fields = (
             'submit_date',
@@ -62,6 +66,25 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
             'is_public',
             'is_removed',
         )
+
+    def get_parent_user(self, obj):
+        parent = obj.parent
+        if not parent:
+            return None
+        user = parent.user
+        return {
+            'id': user.id,
+            'nickname': user.nickname,
+            'mugshot': user.mugshot.url,
+        }
+
+    def get_user(self, obj):
+        user = obj.user
+        return {
+            'id': user.id,
+            'nickname': user.nickname,
+            'mugshot': user.mugshot.url,
+        }
 
 
 class TreeRepliesSerializer(serializers.ModelSerializer):
