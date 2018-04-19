@@ -30,14 +30,19 @@ class UserViewSets(viewsets.GenericViewSet):
     permission_classes = [AllowAny, ]
     serializer_class = UserDetailsSerializer
 
-    @action(methods=['get'], detail=True)
+    @action(methods=['get'], detail=True, serializer_class=FlatReplySerializer)
     def replies(self, request, pk=None):
         user = self.get_object()
         replies = user.reply_comments.filter(is_public=True, is_removed=False)
-        serializer = FlatReplySerializer(replies, many=True)
+        page = self.paginate_queryset(replies)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(replies, many=True)
         return Response(serializer.data)
 
-    @action(methods=['get'], detail=True)
+    @action(methods=['get'], detail=True, serializer_class=IndexPostListSerializer)
     def posts(self, request, pk=None):
         user = self.get_object()
         posts = user.post_set.all()
@@ -48,10 +53,19 @@ class UserViewSets(viewsets.GenericViewSet):
             # 只有用户自己可以查看被隐藏的帖子
             if user != self.request.user:
                 return Response(status=status.HTTP_403_FORBIDDEN)
-            serializer = IndexPostListSerializer(posts.filter(hidden=True), many=True, context={'request': request})
+            page = self.paginate_queryset(posts.filter(hidden=True))
+            if page is not None:
+                serializer = self.get_serializer(page, many=True, context={'request': request})
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(posts.filter(hidden=True), many=True, context={'request': request})
             return Response(serializer.data)
 
-        serializer = IndexPostListSerializer(posts.filter(hidden=False), many=True, context={'request': request})
+        page = self.paginate_queryset(posts.filter(hidden=False))
+        if page is not None:
+            serializer = self.get_serializer(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(posts.filter(hidden=False), many=True, context={'request': request})
         return Response(serializer.data)
 
     @action(

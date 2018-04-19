@@ -154,5 +154,10 @@ class PostViewSet(viewsets.ModelViewSet):
     def replies(self, request, pk=None):
         post = self.get_object()
         replies = post.replies.filter(is_public=True, is_removed=False)
+        page = self.paginate_queryset(replies)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(replies, many=True)
         return Response(serializer.data)
