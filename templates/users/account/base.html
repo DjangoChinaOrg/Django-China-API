@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <style>
   body {
-    padding-top: 100px;
+    padding-top: 56px;
+  }
+  .container.form-container {
+    margin-top: 50px;
   }
 </style>
 <html>
@@ -18,13 +21,10 @@
     {% block body %}
 
       {% if messages %}
-        <div>
-          <strong>Messages:</strong>
-          <ul>
-            {% for message in messages %}
-              <li>{{message}}</li>
-            {% endfor %}
-          </ul>
+        <div class="alert alert-primary">
+          {% for message in messages %}
+            <div>{{message}}</div>
+          {% endfor %}
         </div>
       {% endif %}
 
