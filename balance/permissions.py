@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import permissions
 
-from ..models import Record
+from balance.models import Record
 
 
 class OncePerDay(permissions.BasePermission):
