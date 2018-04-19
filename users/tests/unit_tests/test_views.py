@@ -1,15 +1,14 @@
 from allauth.account.models import EmailAddress
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.utils.timezone import now, timedelta
+from django.utils.timezone import timedelta
 from rest_framework import status, test
 from rest_framework.reverse import reverse
 
 from balance.models import Record
 from posts.models import Post
-from replies.api.serializers import FlatReplySerializer
 from replies.models import Reply
-
+from replies.serializers import FlatReplySerializer
 from ...models import User
 
 
@@ -300,9 +299,9 @@ class EmailAddressViewSetTestCase(test.APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 5)
         self.assertTrue(
-            all([ret['user'] == self.user.id for ret in response.data])
+            all([ret['user'] == self.user.id for ret in response.data['data']])
         )
 
     def test_user_cannnot_get_others_email(self):

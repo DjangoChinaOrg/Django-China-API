@@ -2,18 +2,17 @@ import math
 import random
 
 from django.db.models import Sum
-from rest_auth.registration.views import LoginView, RegisterView, SocialLoginView
+from rest_auth.registration.views import LoginView
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from balance.api.permissions import IsCurrentUser, OncePerDay
-from balance.api.serializers import BalanceSerializer
 from balance.models import Record
+from balance.permissions import IsCurrentUser, OncePerDay
+from balance.serializers import BalanceSerializer
 from posts.serializers import IndexPostListSerializer
-from replies.api.serializers import FlatReplySerializer
-
+from replies.serializers import FlatReplySerializer
 from .models import User
 from .permissions import IsVerified, NotPrimary
 from .serializers import EmailAddressSerializer, UserDetailsSerializer

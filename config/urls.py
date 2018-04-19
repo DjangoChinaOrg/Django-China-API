@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from allauth.account.views import email_verification_sent
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
@@ -24,7 +23,7 @@ from rest_framework_jwt.views import refresh_jwt_token
 
 from notification_extension.views import NotificationViewSet
 from posts.views import PostViewSet
-from replies.api.views import ReplyViewSet
+from replies.views import ReplyViewSet
 from tags.views import TagViewSet
 from users.views import EmailAddressViewSet, LoginViewCustom, UserViewSets
 

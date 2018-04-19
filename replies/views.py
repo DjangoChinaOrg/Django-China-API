@@ -9,10 +9,10 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from replies.api.serializers import (FollowSerializer,
-                                     ReplyCreationSerializer)
-from .permissions import NotSelf
-from ..models import Reply
+from replies.permissions import NotSelf
+from replies.serializers import (FollowSerializer,
+                                 ReplyCreationSerializer)
+from replies.models import Reply
 
 
 class ReplyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):

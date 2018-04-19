@@ -12,14 +12,14 @@ class FlatReplySerializer(serializers.ModelSerializer):
     # TODO: 应该返回被回复帖子的 hyperlink，用户点击帖子标题后就跳转到帖子页面的回复处
     # TODO: 应该返父回复用户的 hyperlink，用户点击昵称后跳转到该用户的详情页
     # TODO：等帖子和用户的 API 确定后再修改
-    post_title = serializers.SerializerMethodField(read_only=True)
-    parent_user = serializers.SerializerMethodField(read_only=True)
+    post_title = serializers.SerializerMethodField()
+    parent_user = serializers.SerializerMethodField()
 
     # TODO: 统一到 user 中，等待 UserSerializer 的定义
     # 获取用户头像报 Unicode 编码错误
-    # user_mugshot = serializers.SerializerMethodField(read_only=True)
-    user_nickname = serializers.SerializerMethodField(read_only=True)
-    like_count = serializers.SerializerMethodField(read_only=True)
+    # user_mugshot = serializers.SerializerMethodField()
+    user_nickname = serializers.SerializerMethodField()
+    like_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Reply
@@ -83,12 +83,12 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
     这个 Serializer 适合用于帖子详情页的 reply 列表。
     """
     descendants = FlatReplySerializer(many=True)
-    num_descendants = serializers.SerializerMethodField(read_only=True)
+    num_descendants = serializers.SerializerMethodField()
 
     # TODO: 统一到 user 中，等待 UserSerializer 的定义
-    # user_mugshot = serializers.SerializerMethodField(read_only=True)
-    user_nickname = serializers.SerializerMethodField(read_only=True)
-    like_count = serializers.SerializerMethodField(read_only=True)
+    # user_mugshot = serializers.SerializerMethodField()
+    user_nickname = serializers.SerializerMethodField()
+    like_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Reply

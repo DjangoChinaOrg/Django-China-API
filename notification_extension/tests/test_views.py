@@ -91,7 +91,7 @@ class NotificationViewSetsTestCase(test.APITestCase):
         self.client.login(username='test', password='test')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['results'][0]['recipient'], self.user.id)
+        self.assertEqual(response.data['data'][0]['recipient'], self.user.id)
 
     def test_authenticated_user_can_get_single_notification_method(self):
         # 用户可以获取自己单条通知
