@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     # third-party apps
+    'bootstrapform',
     'notifications',
     'rest_framework',
     'rest_framework.authtoken',
