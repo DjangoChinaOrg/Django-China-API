@@ -10,9 +10,7 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
     """
     首页帖子列表序列化器
     """
-    # TODO: 等待userserializer的定义，返回更详细的author信息
     author = serializers.SerializerMethodField()
-
     reply_count = serializers.SerializerMethodField()
     tags = TagSerializer(many=True, read_only=True)
     latest_reply_time = serializers.SerializerMethodField()
@@ -34,15 +32,13 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
             'reply_count',
         )
 
-    def get_author(self, value):
-        data = {}
-        data['id'] = value.author.id
-        try:
-            data['mugshot'] = value.author.mugshot.url
-        except ValueError:
-            data['mugshot'] = None
-        data['nickname'] = value.author.nickname
-        return data
+    def get_author(self, obj):
+        author = obj.author
+        return {
+            'id': author.id,
+            'mugshot': author.mugshot.url,
+            'nickname': author.nickname,
+        }
 
     def get_reply_count(self, value):
         """
@@ -66,7 +62,6 @@ class PopularPostSerializer(serializers.HyperlinkedModelSerializer):
     """
     热门帖子序列化器
     """
-    # TODO: 返回user_url 需要实现了user-deail
     author = serializers.SerializerMethodField()
 
     class Meta:
@@ -78,11 +73,13 @@ class PopularPostSerializer(serializers.HyperlinkedModelSerializer):
             'author',
         )
 
-    def get_author(self, value):
-        data = {}
-        data['id'] = value.author.id
-        data['mugshot'] = value.author.mugshot.url
-        return data
+    def get_author(self, obj):
+        author = obj.author
+        return {
+            'id': author.id,
+            'mugshot': author.mugshot.url,
+            'nickname': author.nickname,
+        }
 
 
 class PostDetailSerializer(IndexPostListSerializer):
@@ -90,7 +87,6 @@ class PostDetailSerializer(IndexPostListSerializer):
     用来显示帖子详情，已经用来创建、修改帖子的序列化器
     """
     author = serializers.SerializerMethodField()
-    replies = serializers.SerializerMethodField()
     participants_count = serializers.SerializerMethodField()
     content_type = serializers.SerializerMethodField()
 
@@ -108,7 +104,6 @@ class PostDetailSerializer(IndexPostListSerializer):
             'tags',
             'reply_count',
             'participants_count',
-            'replies'
         )
 
     def get_content_type(self, value):

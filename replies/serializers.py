@@ -9,52 +9,54 @@ class FlatReplySerializer(serializers.ModelSerializer):
     返回一个扁平化的按发表时间倒序排序的 reply 列表，无视其层级关系。
     适合用在 user 详情页面的个人回复列表中。
     """
-    # TODO: 应该返回被回复帖子的 hyperlink，用户点击帖子标题后就跳转到帖子页面的回复处
-    # TODO: 应该返父回复用户的 hyperlink，用户点击昵称后跳转到该用户的详情页
-    # TODO：等帖子和用户的 API 确定后再修改
-    post_title = serializers.SerializerMethodField()
+    post = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
     parent_user = serializers.SerializerMethodField()
-
-    # TODO: 统一到 user 中，等待 UserSerializer 的定义
-    # 获取用户头像报 Unicode 编码错误
-    # user_mugshot = serializers.SerializerMethodField()
-    user_nickname = serializers.SerializerMethodField()
-    like_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Reply
         fields = (
-            # 'user_mugshot',
-            'user_nickname',
-            'post_title',
+            'user',
+            'parent_user',
+            'post',
             'submit_date',
             'comment',
-            'parent_user',
             'like_count',
         )
 
-    def get_post_title(self, obj):
-        return obj.content_object.title
+    def get_post(self, obj):
+        post = obj.content_object
+        return {
+            'id': post.id,
+            'title': post.title,
+        }
+
+    def get_user(self, obj):
+        user = obj.user
+        return {
+            'id': user.id,
+            'nickname': user.nickname,
+            'mugshot': user.mugshot.url,
+        }
 
     def get_parent_user(self, obj):
-        if obj.parent:
-            return obj.parent.user.nickname
-        return None
-
-    def get_user_mugshot(self, obj):
-        return obj.user.mugshot
-
-    def get_user_nickname(self, obj):
-        return obj.user.nickname
-
-    def get_like_count(self, obj):
-        return Follow.objects.for_object(obj, flag='like').count()
+        parent = obj.parent
+        if not parent:
+            return None
+        user = parent.user
+        return {
+            'id': user.id,
+            'nickname': user.nickname,
+            'mugshot': user.mugshot.url,
+        }
 
 
 class ReplyCreationSerializer(serializers.ModelSerializer):
     """
     仅用于 reply 的创建
     """
+    parent_user = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
 
     class Meta:
         model = Reply
@@ -68,6 +70,8 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
             'ip_address',
             'is_public',
             'is_removed',
+            'user',
+            'parent_user',
         )
         read_only_fields = (
             'submit_date',
@@ -76,6 +80,25 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
             'is_removed',
         )
 
+    def get_parent_user(self, obj):
+        parent = obj.parent
+        if not parent:
+            return None
+        user = parent.user
+        return {
+            'id': user.id,
+            'nickname': user.nickname,
+            'mugshot': user.mugshot.url,
+        }
+
+    def get_user(self, obj):
+        user = obj.user
+        return {
+            'id': user.id,
+            'nickname': user.nickname,
+            'mugshot': user.mugshot.url,
+        }
+
 
 class TreeRepliesSerializer(serializers.ModelSerializer):
     """
@@ -83,38 +106,28 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
     这个 Serializer 适合用于帖子详情页的 reply 列表。
     """
     descendants = FlatReplySerializer(many=True)
-    num_descendants = serializers.SerializerMethodField()
-
-    # TODO: 统一到 user 中，等待 UserSerializer 的定义
-    # user_mugshot = serializers.SerializerMethodField()
-    user_nickname = serializers.SerializerMethodField()
-    like_count = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
 
     class Meta:
         model = Reply
         fields = (
             'content_type',
             'object_pk',
-            # 'user_mugshot',
-            'user_nickname',
             'comment',
             'submit_date',
             'like_count',
-            'num_descendants',
+            'user',
             'descendants',
+            'descendants_count',
         )
 
-    def get_num_descendants(self, obj):
-        return obj.descendants().count()
-
-    def get_user_mugshot(self, obj):
-        return obj.user.mugshot
-
-    def get_user_nickname(self, obj):
-        return obj.user.nickname
-
-    def get_like_count(self, obj):
-        return Follow.objects.for_object(obj, flag='like').count()
+    def get_user(self, obj):
+        user = obj.user
+        return {
+            'id': user.id,
+            'nickname': user.nickname,
+            'mugshot': user.mugshot.url,
+        }
 
 
 class FollowSerializer(serializers.ModelSerializer):
