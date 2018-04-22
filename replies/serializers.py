@@ -11,11 +11,13 @@ class FlatReplySerializer(serializers.ModelSerializer):
     """
     post = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
+    parent_user = serializers.SerializerMethodField()
 
     class Meta:
         model = Reply
         fields = (
             'user',
+            'parent_user',
             'post',
             'submit_date',
             'comment',
@@ -31,6 +33,17 @@ class FlatReplySerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         user = obj.user
+        return {
+            'id': user.id,
+            'nickname': user.nickname,
+            'mugshot': user.mugshot.url,
+        }
+
+    def get_parent_user(self, obj):
+        parent = obj.parent
+        if not parent:
+            return None
+        user = parent.user
         return {
             'id': user.id,
             'nickname': user.nickname,

@@ -65,7 +65,7 @@ class UserViewSetTestCase(test.APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data,
+            response.data['data'],
             FlatReplySerializer(
                 self.user.reply_comments.filter(is_public=True, is_removed=False),
                 many=True
@@ -148,7 +148,7 @@ class UserViewSetTestCase(test.APITestCase):
         url = reverse('user-posts', kwargs={'pk': self.user.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
+        self.assertEqual(len(response.data['data']), 3)
 
     def test_user_can_only_get_self_hidden_posts(self):
         Post.objects.create(
@@ -174,7 +174,7 @@ class UserViewSetTestCase(test.APITestCase):
 
         self.client.login(username='test', password='test')
         response = self.client.get(url, {'hidden': 'true'})
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['data']), 1)
 
         other_url = reverse('user-posts', kwargs={'pk': self.another_user.id})
         response = self.client.get(other_url, {'hidden': 'true'})

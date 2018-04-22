@@ -71,7 +71,7 @@ class UserViewSets(viewsets.GenericViewSet):
     @action(
         methods=['post'],
         detail=True,
-        permission_classes=[permissions.IsAuthenticated, OncePerDay, IsCurrentUser]
+        permission_classes=[permissions.IsAuthenticated, OncePerDay, IsCurrentUser],
     )
     def checkin(self, request, pk=None):
         user = self.get_object()
