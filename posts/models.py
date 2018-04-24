@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+from model_utils.models import TimeStampedModel
 
 from replies.models import Reply
 
@@ -10,17 +11,15 @@ class PublicManager(models.Manager):
         return super(PublicManager, self).get_queryset().filter(hidden=False).order_by('-created_time')
 
 
-class Post(models.Model):
+class Post(TimeStampedModel):
     title = models.CharField("标题", max_length=255)
     body = models.TextField("正文", blank=True)
     views = models.PositiveIntegerField("浏览量", default=0, editable=False)
-    created_time = models.DateTimeField("创建时间", auto_now_add=True)
-    modified_time = models.DateTimeField("修改时间", auto_now=True)
     pinned = models.BooleanField("置顶", default=False)
     highlighted = models.BooleanField("加精", default=False)
     hidden = models.BooleanField("隐藏", default=False)
     tags = models.ManyToManyField('tags.Tag', verbose_name="标签")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="作者")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="作者", on_delete=models.CASCADE)
     replies = GenericRelation(Reply, object_id_field='object_pk', content_type_field='content_type',
                               verbose_name="回复")
 

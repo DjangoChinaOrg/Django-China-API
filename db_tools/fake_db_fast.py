@@ -25,20 +25,19 @@ from allauth.account.models import EmailAddress
 from rest_framework.test import APIClient
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
-import factory
 from faker import Faker
 
 if __name__ == '__main__':
     site = SiteFactory()
     c = APIClient()
     fake = Faker()
-    # 生成 10 个用户
-    UserFactory.create_batch(10)
+    # 生成 5 个用户
+    UserFactory.create_batch(5)
     print('users created...')
 
-    # 生成 10 个标签
+    # 生成 5 个标签
     user = UserFactory(username='admin')
-    TagFactory.create_batch(10, creator=user)
+    TagFactory.create_batch(5, creator=user)
     print('tags created...')
 
     tags = list(Tag.objects.all())
@@ -46,7 +45,7 @@ if __name__ == '__main__':
 
     # 每个用户发布一定量的帖子
     for user in users:
-        post_count = random.randint(10, 15)
+        post_count = random.randint(5, 10)
 
         for i in range(post_count):
             tag_count = random.randint(1, 3)
@@ -61,7 +60,7 @@ if __name__ == '__main__':
             primary=True
         )
         # 获得一定的财富
-        RecordFactory.create_batch(random.randint(0, 10), user=user)
+        RecordFactory.create_batch(random.randint(0, 3), user=user)
 
     print('posts posted...')
 
@@ -74,7 +73,7 @@ if __name__ == '__main__':
         post_id = post.id
         url = reverse('reply-list')
 
-        user_sample = random.sample(users, random.randint(0, 10))
+        user_sample = random.sample(users, random.randint(0, 5))
         for user in user_sample:
             data = {
                 "content_type": post_ct.id,
@@ -88,7 +87,7 @@ if __name__ == '__main__':
     print('post replies created...')
 
     # 再随机选择一些用户对某些回复进行回复
-    for i in range(3):
+    for i in range(2):
         replies = list(Reply.objects.all())
         for reply in replies:
             indicator = random.randint(0, 2)
@@ -114,7 +113,7 @@ if __name__ == '__main__':
 
     # 再随机选择一些用户对回复进行点赞
     replies = list(Reply.objects.all())
-    for i in range(5):
+    for i in range(2):
         for reply in replies:
             indicator = random.randint(0, 2)
             if indicator:  # 以 1/3 的概率回复

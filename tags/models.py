@@ -1,11 +1,11 @@
 from django.conf import settings
 from django.db import models
+from model_utils.models import TimeStampedModel
 
 
-class Tag(models.Model):
-    created_time = models.DateTimeField("创建时间", auto_now_add=True)
+class Tag(TimeStampedModel):
     name = models.CharField("标签名", max_length=100, unique=True)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="创建者")
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="创建者", on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "标签"
