@@ -2,9 +2,8 @@ import os
 import sys
 import random
 
-pwd = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(pwd + '../')
-
+BASE_DIR = os.path.dirname((os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(BASE_DIR)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
 
 import django
@@ -25,7 +24,6 @@ from allauth.account.models import EmailAddress
 from rest_framework.test import APIClient
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
-import factory
 from faker import Faker
 
 if __name__ == '__main__':
