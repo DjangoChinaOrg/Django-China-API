@@ -21,7 +21,7 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from rest_framework_jwt.views import refresh_jwt_token
 
-from notification_extension.views import NotificationViewSet
+from notifications_extension.views import NotificationViewSet
 from posts.views import PostViewSet
 from replies.views import ReplyViewSet
 from tags.views import TagViewSet

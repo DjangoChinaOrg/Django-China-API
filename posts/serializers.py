@@ -22,8 +22,8 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'title',
             'views',
-            'created_time',
-            'modified_time',
+            'created',
+            'modified',
             'latest_reply_time',
             'pinned',
             'highlighted',
@@ -40,18 +40,18 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
             'nickname': author.nickname,
         }
 
-    def get_reply_count(self, value):
+    def get_reply_count(self, obj):
         """
         返回帖子的回复数量
         """
-        return value.replies.count()
+        return obj.replies.count()
 
-    def get_latest_reply_time(self, value):
+    def get_latest_reply_time(self, obj):
         """
         返回最后一次评论的时间，
         如果没有评论，返回null
         """
-        replies = value.replies.all().order_by('-submit_date')
+        replies = obj.replies.all().order_by('-submit_date')
         if replies:
             return replies[0].submit_date
         else:
@@ -98,35 +98,35 @@ class PostDetailSerializer(IndexPostListSerializer):
             'title',
             'author',
             'views',
-            'created_time',
-            'modified_time',
+            'created',
+            'modified',
             'body',
             'tags',
             'reply_count',
             'participants_count',
         )
 
-    def get_content_type(self, value):
+    def get_content_type(self, obj):
         """
         帖子的content_type
         """
-        content_type = ContentType.objects.get_for_model(value)
+        content_type = ContentType.objects.get_for_model(obj)
         return content_type.id
 
-    def get_replies(self, value):
+    def get_replies(self, obj):
         """
         返回帖子下的回复
         """
-        replies = value.replies.filter(parent__isnull=True)
+        replies = obj.replies.filter(parent__isnull=True)
         serializer = TreeRepliesSerializer(replies, many=True)
         return serializer.data
 
-    def get_participants_count(self, value):
+    def get_participants_count(self, obj):
         """
         返回评论参与者数量
         """
         user_list = []
-        replies = value.replies.all()
+        replies = obj.replies.all()
         for reply in replies:
             if reply.user not in user_list:
                 user_list.append(reply.user)

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django_comments',
     'actstream',
     'django_filters',
+    'corsheaders',
 
     # local apps
     'users',
@@ -58,12 +59,13 @@ INSTALLED_APPS = [
     'replies',
     'tags',
     'balance',
-    'notification_extension',
+    'notifications_extension',
 ]
 
 COMMENTS_APP = 'replies'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -73,6 +75,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True # 跨域
 
 ROOT_URLCONF = 'config.urls'
 
