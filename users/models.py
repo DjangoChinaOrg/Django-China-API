@@ -1,9 +1,11 @@
 import os
 
+from django.core.files.base import ContentFile
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.signals import user_logged_in
 from django.db import models
 
+from .mugshot import Avatar
 from .utils import get_ip_address_from_request
 
 
@@ -23,6 +25,21 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def save(self, *args, **kwargs):
+        if not self.mugshot:
+            avatar = Avatar(rows=10, columns=10)
+            image_byte_array = avatar.get_image(
+                string=self.username,
+                width=480,
+                height=480,
+                pad=10
+            )
+            self.mugshot.save('default_mugshot.png', ContentFile(image_byte_array), save=False)
+        if not self.pk and not self.nickname:
+            # 自动将username存入到nickname域内
+            self.nickname = self.username
+        super(User, self).save(*args, **kwargs)
 
 
 def update_last_login_ip(sender, user, request, **kwargs):

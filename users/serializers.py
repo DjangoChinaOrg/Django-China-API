@@ -1,7 +1,9 @@
 from allauth.account.adapter import get_adapter
+from allauth.account.models import EmailAddress
 from allauth.account.utils import setup_user_email
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
+from rest_framework.fields import CurrentUserDefault
 
 from .models import User
 from .utils import get_ip_address_from_request
@@ -11,6 +13,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     """
     用户详细信息的序列器
     """
+    mugshot_url = serializers.URLField(source='mugshot.url')
     post_count = serializers.SerializerMethodField()
     reply_count = serializers.SerializerMethodField()
 
@@ -19,8 +22,8 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'id',
             'username',
-            'nickname',
             'date_joined',
+            'mugshot_url',
             'ip_joined',
             'last_login_ip',
             'is_superuser',
@@ -30,7 +33,9 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'nickname',
+            'email',
             'date_joined',
+            'mugshot_url',
             'ip_joined',
             'last_login_ip',
             'is_superuser',
@@ -59,13 +64,11 @@ class UserRegistrationSerializer(RegisterSerializer):
 
     def save(self, request):
         """
-        改写父类的save方法，自动将username存入到nickname域内
-        同时检测并存入用户的注册IP地址
+        改写父类的save方法，检测并存入用户的注册IP地址
         """
         adapter = get_adapter()
         user = adapter.new_user(request)
         self.cleaned_data = self.get_cleaned_data()
-        user.nickname = self.cleaned_data.get('username')
         ip = get_ip_address_from_request(request)
         if ip:
             user.ip_joined = ip
@@ -73,3 +76,15 @@ class UserRegistrationSerializer(RegisterSerializer):
         self.custom_signup(request, user)
         setup_user_email(request, user, [])
         return user
+
+
+class EmailAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailAddress
+        fields = (
+            'user',
+            'email',
+            'verified',
+            'primary',
+        )
+        read_only_fields = ('user', 'verified', 'primary')

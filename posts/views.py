@@ -1,17 +1,14 @@
 import datetime
-from collections import OrderedDict
 
 from django.db.models import Count, Max
 from django.utils.timezone import now
 from django_filters import rest_framework as filters
-
-from rest_framework import pagination, permissions, serializers, status, viewsets
-from rest_framework.decorators import list_route, action
+from rest_framework import permissions, serializers, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from replies.serializers import TreeRepliesSerializer
 from tags.models import Tag
-from replies.api.serializers import TreeRepliesSerializer
-
 from .models import Post
 from .permissions import IsAdminAuthorOrReadOnly
 from .serializers import (
@@ -21,26 +18,13 @@ from .serializers import (
 )
 
 
-class PostPagination(pagination.PageNumberPagination):
-    page_size = 20
-
-    def get_paginated_response(self, data):
-        return Response(OrderedDict([
-            ('count', self.page.paginator.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('posts', data)
-        ]))
-
-
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.public.annotate(
         latest_reply_time=Max('replies__submit_date')
-    ).order_by('-pinned', '-latest_reply_time', '-created_time')
+    ).order_by('-pinned', '-latest_reply_time', '-created')
     serializer_class = IndexPostListSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsAdminAuthorOrReadOnly)
-    pagination_class = PostPagination
     # 允许get post put方法
     http_method_names = ['get', 'post', 'put', 'patch']
     filter_backends = (filters.DjangoFilterBackend,)
@@ -143,7 +127,7 @@ class PostViewSet(viewsets.ModelViewSet):
             data['tags'] = tags
         serializer.save(**data)
 
-    @list_route(serializer_class=PopularPostSerializer)
+    @action(detail=False, serializer_class=PopularPostSerializer)
     def popular(self, request):
         """
         返回48小时内评论次数最多的帖子
@@ -156,6 +140,13 @@ class PostViewSet(viewsets.ModelViewSet):
             latest_reply_time__gt=(now() - datetime.timedelta(days=2)),
             latest_reply_time__lt=now()
         ).order_by('-num_replies', '-latest_reply_time')[:10]
+
+        # return paginated queryset as response data if paginator exists
+        page = self.paginate_queryset(popular_posts)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(popular_posts, many=True)
         return Response(serializer.data)
 
@@ -163,5 +154,10 @@ class PostViewSet(viewsets.ModelViewSet):
     def replies(self, request, pk=None):
         post = self.get_object()
         replies = post.replies.filter(is_public=True, is_removed=False)
+        page = self.paginate_queryset(replies)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(replies, many=True)
         return Response(serializer.data)

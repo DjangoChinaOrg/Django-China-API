@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models import Record
+from balance.models import Record
 
 
 class BalanceSerializer(serializers.ModelSerializer):

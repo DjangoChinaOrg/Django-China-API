@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from replies.api import views
+from . import views
 
 app_name = 'replies'
 urlpatterns = [
