@@ -19,9 +19,13 @@ from .serializers import (
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.public.annotate(
-        latest_reply_time=Max('replies__submit_date')
-    ).order_by('-pinned', '-latest_reply_time', '-created')
+    queryset = IndexPostListSerializer.setup_eager_loading(
+        Post.public.annotate(
+            latest_reply_time=Max('replies__submit_date')
+        ).order_by('-pinned', '-latest_reply_time', '-created'),
+        select_related=IndexPostListSerializer.SELECT_RELATED_FIELDS,
+        prefetch_related=IndexPostListSerializer.PREFETCH_RELATED_FIELDS
+    )
     serializer_class = IndexPostListSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsAdminAuthorOrReadOnly)
