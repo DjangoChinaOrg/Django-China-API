@@ -136,14 +136,17 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         返回48小时内评论次数最多的帖子
         """
-        popular_posts = Post.public.annotate(
-            num_replies=Count('replies'),
-            latest_reply_time=Max('replies__submit_date')
-        ).filter(
-            num_replies__gt=0,
-            latest_reply_time__gt=(now() - datetime.timedelta(days=2)),
-            latest_reply_time__lt=now()
-        ).order_by('-num_replies', '-latest_reply_time')[:10]
+        popular_posts = PopularPostSerializer.setup_eager_loading(
+            Post.public.annotate(
+                num_replies=Count('replies'),
+                latest_reply_time=Max('replies__submit_date')
+            ).filter(
+                num_replies__gt=0,
+                latest_reply_time__gt=(now() - datetime.timedelta(days=2)),
+                latest_reply_time__lt=now()
+            ).order_by('-num_replies', '-latest_reply_time')[:10],
+            select_related=PopularPostSerializer.SELECT_RELATED_FIELDS
+        )
 
         # return paginated queryset as response data if paginator exists
         page = self.paginate_queryset(popular_posts)

@@ -66,11 +66,13 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer, EagerLoade
             return None
 
 
-class PopularPostSerializer(serializers.HyperlinkedModelSerializer):
+class PopularPostSerializer(serializers.HyperlinkedModelSerializer, EagerLoaderMixin):
     """
     热门帖子序列化器
     """
     author = serializers.SerializerMethodField()
+
+    SELECT_RELATED_FIELDS = ['author']
 
     class Meta:
         model = Post
