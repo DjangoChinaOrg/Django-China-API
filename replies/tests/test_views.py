@@ -173,7 +173,8 @@ class ReplyViewSetsTestCase(test.APITestCase):
 
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # An error occurred in the current transaction. You can't execute queries until the end of the 'atomic' block.
+        # An error occurred in the current transaction.
+        # You can't execute queries until the end of the 'atomic' block.
         # 暂时不知道如何解决
         # self.assertEqual(Follow.objects.count(), 1)
 

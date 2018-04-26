@@ -10,5 +10,7 @@ if __name__ == "__main__":
     django.setup()
     TestRunner = get_runner(settings)
     test_runner = TestRunner()
-    failures = test_runner.run_tests(['replies', 'posts', 'tags', 'users', 'balance', 'notifications_extension'])
+    failures = test_runner.run_tests([
+        'replies', 'posts', 'tags', 'users', 'balance', 'notifications_extension'
+    ])
     sys.exit(bool(failures))

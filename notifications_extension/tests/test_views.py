@@ -107,7 +107,11 @@ class NotificationViewSetsTestCase(test.APITestCase):
     def test_authenticated_user_can_not_get_other_users_single_notification_method(self):
         # 用户无法通过API获取属于其它用户的单条通知
 
-        reply_moderator.notify(reply=self.another_reply, content_object=self.another_post, request=None)
+        reply_moderator.notify(
+            reply=self.another_reply,
+            content_object=self.another_post,
+            request=None
+        )
         notification = Notification.objects.first()
         url = reverse('notifications-detail', kwargs={'pk': notification.id})
         self.client.login(username='test', password='test')
@@ -130,7 +134,11 @@ class NotificationViewSetsTestCase(test.APITestCase):
     def test_authenticated_user_can_not_modify_other_users_single_notification_to_read_method(self):
         # 用户无法通过 API 将其它用户的通知标为已读
 
-        reply_moderator.notify(reply=self.another_reply, content_object=self.another_post, request=None)
+        reply_moderator.notify(
+            reply=self.another_reply,
+            content_object=self.another_post,
+            request=None
+        )
         notification = Notification.objects.first()
         self.assertEqual(notification.unread, True)
         url = reverse('notifications-detail', kwargs={'pk': notification.id})
@@ -156,7 +164,11 @@ class NotificationViewSetsTestCase(test.APITestCase):
     def test_authenticated_user_can_delete_other_user_single_notification_method(self):
         # 用户无法通过 API 将其它用户的单条通知删除
 
-        reply_moderator.notify(reply=self.another_reply, content_object=self.another_post, request=None)
+        reply_moderator.notify(
+            reply=self.another_reply,
+            content_object=self.another_post,
+            request=None
+        )
         notification = Notification.objects.first()
         self.assertEqual(notification.deleted, False)
         url = reverse('notifications-detail', kwargs={'pk': notification.id})
@@ -182,7 +194,11 @@ class NotificationViewSetsTestCase(test.APITestCase):
     def test_authenticated_user_can_not_make_other_users_all_notification_to_read_method(self):
         # 用户可以将自己的全部通知标为已读
 
-        reply_moderator.notify(reply=self.another_reply, content_object=self.another_post, request=None)
+        reply_moderator.notify(
+            reply=self.another_reply,
+            content_object=self.another_post,
+            request=None
+        )
         notification = Notification.objects.first()
         self.assertEqual(notification.unread, True)  # 其他用户的通知 验证未读
         url = reverse('notifications-mark-all-as-read')

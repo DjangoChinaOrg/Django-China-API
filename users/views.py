@@ -58,14 +58,22 @@ class UserViewSets(viewsets.GenericViewSet):
                 serializer = self.get_serializer(page, many=True, context={'request': request})
                 return self.get_paginated_response(serializer.data)
 
-            serializer = self.get_serializer(posts.filter(hidden=True), many=True, context={'request': request})
+            serializer = self.get_serializer(
+                posts.filter(hidden=True),
+                many=True,
+                context={'request': request}
+            )
             return Response(serializer.data)
 
         page = self.paginate_queryset(posts.filter(hidden=False))
         if page is not None:
             serializer = self.get_serializer(page, many=True, context={'request': request})
             return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(posts.filter(hidden=False), many=True, context={'request': request})
+        serializer = self.get_serializer(
+            posts.filter(hidden=False),
+            many=True,
+            context={'request': request}
+        )
         return Response(serializer.data)
 
     @action(
