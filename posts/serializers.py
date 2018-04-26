@@ -1,7 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
-from replies.serializers import TreeRepliesSerializer
 from tags.serializers import TagSerializer
 from .models import Post
 
@@ -51,9 +50,10 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
         返回最后一次评论的时间，
         如果没有评论，返回null
         """
-        replies = obj.replies.all().order_by('-submit_date')
-        if replies:
-            return replies[0].submit_date
+        reply_times = obj.replies.values_list('submit_date', flat=True).\
+            order_by('-submit_date')
+        if reply_times:
+            return reply_times[0]
         else:
             return None
 
@@ -113,21 +113,8 @@ class PostDetailSerializer(IndexPostListSerializer):
         content_type = ContentType.objects.get_for_model(obj)
         return content_type.id
 
-    def get_replies(self, obj):
-        """
-        返回帖子下的回复
-        """
-        replies = obj.replies.filter(parent__isnull=True)
-        serializer = TreeRepliesSerializer(replies, many=True)
-        return serializer.data
-
     def get_participants_count(self, obj):
         """
         返回评论参与者数量
         """
-        user_list = []
-        replies = obj.replies.all()
-        for reply in replies:
-            if reply.user not in user_list:
-                user_list.append(reply.user)
-        return len(user_list)
+        return obj.replies.values_list('user', flat=True).distinct().count()
