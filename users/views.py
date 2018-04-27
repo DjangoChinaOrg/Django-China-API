@@ -2,7 +2,8 @@ import math
 import random
 
 from django.db.models import Sum
-from rest_auth.registration.views import LoginView
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from rest_auth.registration.views import LoginView, SocialLoginView, SocialConnectView
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -23,6 +24,15 @@ class LoginViewCustom(LoginView):
     登陆视图取消authentication_class以此避免CSRF校验
     """
     authentication_classes = ()
+
+
+class GitHubLogin(SocialLoginView):
+    authentication_classes = ()
+    adapter_class = GitHubOAuth2Adapter
+
+
+class GitHubConnect(SocialConnectView):
+    adapter_class = GitHubOAuth2Adapter
 
 
 class UserViewSets(viewsets.GenericViewSet):
