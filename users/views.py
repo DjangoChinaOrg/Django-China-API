@@ -1,6 +1,7 @@
 import math
 import random
 
+from django.conf import settings
 from django.db.models import Sum
 from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
@@ -31,7 +32,7 @@ class GitHubLogin(SocialLoginView):
     authentication_classes = ()
     adapter_class = GitHubOAuth2Adapter
     client_class = OAuth2Client
-    callback_url = 'http://localhost:8081/social-auth/github/loginsuccess'
+    callback_url = getattr(settings, 'SOCIAL_LOGIN_GOOGLE_CALLBACK_URL')
 
 
 class GitHubConnect(SocialConnectView):
