@@ -31,6 +31,8 @@ from tags.views import TagViewSet
 from users.views import (
     EmailAddressViewSet,
     LoginViewCustom,
+    RegisterViewCustom,
+    ConfirmEmailView,
     UserViewSets,
     GitHubLogin,
     GitHubConnect
@@ -48,6 +50,10 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^rest-auth/login/$', LoginViewCustom.as_view(), name='rest_login'),
+    url(r'^rest-auth/registration/$', RegisterViewCustom.as_view(), name='rest_register'),
+    url(r'^rest-auth/registration/account-confirm-email/(?P<key>[-:\w]+)/$',
+        ConfirmEmailView.as_view(),
+        name='account_confirm_email'),
     url(r'^rest-auth/github/login/$', GitHubLogin.as_view(), name='github_login'),
     url(r'^rest-auth/github/connect/$', GitHubConnect.as_view(), name='github_connect'),
     url(r'^rest-auth/socialaccounts/$',
@@ -57,6 +63,8 @@ urlpatterns = [
         SocialAccountDisconnectView.as_view(),
         name='social_account_disconnect'),
     url(r'^rest-auth/jwt-refresh/', refresh_jwt_token),
+    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^api-auth/', include('rest_framework.urls')),  # 仅仅用于测试
     url(r'^', include(router.urls)),
     url(r'^docs/', include_docs_urls(title='Django中文社区 API'))
