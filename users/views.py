@@ -3,6 +3,7 @@ import random
 
 from django.db.models import Sum
 from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from rest_auth.registration.views import LoginView, SocialLoginView, SocialConnectView
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
@@ -29,6 +30,8 @@ class LoginViewCustom(LoginView):
 class GitHubLogin(SocialLoginView):
     authentication_classes = ()
     adapter_class = GitHubOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = 'http://localhost:8081/social-auth/github/loginsuccess'
 
 
 class GitHubConnect(SocialConnectView):
