@@ -139,9 +139,10 @@ class PostViewSet(viewsets.ModelViewSet):
             num_replies__gt=0,
             latest_reply_time__gt=(now() - datetime.timedelta(days=2)),
             latest_reply_time__lt=now()
-        ).order_by('-num_replies', '-latest_reply_time')[:10]
+        ).order_by('-num_replies', '-latest_reply_time')
 
         # return paginated queryset as response data if paginator exists
+        self.paginator.page_size = 10
         page = self.paginate_queryset(popular_posts)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
