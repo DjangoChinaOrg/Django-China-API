@@ -33,10 +33,12 @@ class FlatReplySerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         user = obj.user
+        request = self.context.get('request')
+        url = user.mugshot.url
         return {
             'id': user.id,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
-            'mugshot': user.mugshot.url,
         }
 
     def get_parent_user(self, obj):
@@ -44,10 +46,12 @@ class FlatReplySerializer(serializers.ModelSerializer):
         if not parent:
             return None
         user = parent.user
+        request = self.context.get('request')
+        url = user.mugshot.url
         return {
             'id': user.id,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
-            'mugshot': user.mugshot.url,
         }
 
 
@@ -85,18 +89,22 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
         if not parent:
             return None
         user = parent.user
+        request = self.context.get('request')
+        url = user.mugshot.url
         return {
             'id': user.id,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
-            'mugshot': user.mugshot.url,
         }
 
     def get_user(self, obj):
         user = obj.user
+        request = self.context.get('request')
+        url = user.mugshot.url
         return {
             'id': user.id,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
-            'mugshot': user.mugshot.url,
         }
 
 
@@ -123,10 +131,12 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         user = obj.user
+        request = self.context.get('request')
+        url = user.mugshot.url
         return {
             'id': user.id,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
-            'mugshot': user.mugshot.url,
         }
 
 
