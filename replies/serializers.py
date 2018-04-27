@@ -1,6 +1,9 @@
 from actstream.models import Follow
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from rest_framework import serializers
 
+from posts.models import Post
 from replies.models import Reply
 
 
@@ -65,9 +68,7 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = (
-            'content_type',
             'object_pk',
-            'site',
             'comment',
             'parent',
             'submit_date',
@@ -106,6 +107,16 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
             'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
         }
+
+    def create(self, validated_data):
+        post_id = validated_data.get('object_pk')
+        post_ctype = ContentType.objects.get_for_model(
+            Post.objects.get(id=int(post_id))
+        )
+        site = Site.objects.get_current()
+        validated_data['content_type'] = post_ctype
+        validated_data['site'] = site
+        return super(ReplyCreationSerializer, self).create(validated_data)
 
 
 class TreeRepliesSerializer(serializers.ModelSerializer):
@@ -149,7 +160,6 @@ class FollowSerializer(serializers.ModelSerializer):
         model = Follow
         fields = (
             'user',
-            'content_type',
             'object_id',
             'flag',
             'started',
@@ -161,3 +171,11 @@ class FollowSerializer(serializers.ModelSerializer):
             'flag',
             'started',
         )
+
+    def create(self, validated_data):
+        reply_id = validated_data.get('object_pk')
+        reply_ctype = ContentType.objects.get_for_model(
+            Reply.objects.get(id=int(reply_id))
+        )
+        validated_data['content_type'] = reply_ctype
+        return super(FollowSerializer, self).create(validated_data)

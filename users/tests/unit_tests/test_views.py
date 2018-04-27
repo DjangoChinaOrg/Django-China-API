@@ -68,7 +68,7 @@ class UserViewSetTestCase(test.APITestCase):
             response.data['data'],
             FlatReplySerializer(
                 self.user.reply_comments.filter(is_public=True, is_removed=False),
-                many=True
+                many=True, context={'request': response.wsgi_request}
             ).data
         )
 
