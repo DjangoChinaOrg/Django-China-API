@@ -1,6 +1,9 @@
 from actstream.models import Follow
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from rest_framework import serializers
 
+from posts.models import Post
 from replies.models import Reply
 
 
@@ -16,6 +19,7 @@ class FlatReplySerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = (
+            'id',
             'user',
             'parent_user',
             'post',
@@ -33,10 +37,12 @@ class FlatReplySerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         user = obj.user
+        request = self.context.get('request')
+        url = user.mugshot.url
         return {
             'id': user.id,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
-            'mugshot': user.mugshot.url,
         }
 
     def get_parent_user(self, obj):
@@ -44,10 +50,12 @@ class FlatReplySerializer(serializers.ModelSerializer):
         if not parent:
             return None
         user = parent.user
+        request = self.context.get('request')
+        url = user.mugshot.url
         return {
             'id': user.id,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
-            'mugshot': user.mugshot.url,
         }
 
 
@@ -61,9 +69,7 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = (
-            'content_type',
             'object_pk',
-            'site',
             'comment',
             'parent',
             'submit_date',
@@ -74,6 +80,7 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
             'parent_user',
         )
         read_only_fields = (
+            'id',
             'submit_date',
             'ip_address',
             'is_public',
@@ -85,19 +92,33 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
         if not parent:
             return None
         user = parent.user
+        request = self.context.get('request')
+        url = user.mugshot.url
         return {
             'id': user.id,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
-            'mugshot': user.mugshot.url,
         }
 
     def get_user(self, obj):
         user = obj.user
+        request = self.context.get('request')
+        url = user.mugshot.url
         return {
             'id': user.id,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
-            'mugshot': user.mugshot.url,
         }
+
+    def create(self, validated_data):
+        post_id = validated_data.get('object_pk')
+        post_ctype = ContentType.objects.get_for_model(
+            Post.objects.get(id=int(post_id))
+        )
+        site = Site.objects.get_current()
+        validated_data['content_type'] = post_ctype
+        validated_data['site'] = site
+        return super(ReplyCreationSerializer, self).create(validated_data)
 
 
 class TreeRepliesSerializer(serializers.ModelSerializer):
@@ -111,6 +132,7 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = (
+            'id',
             'content_type',
             'object_pk',
             'comment',
@@ -123,10 +145,12 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         user = obj.user
+        request = self.context.get('request')
+        url = user.mugshot.url
         return {
             'id': user.id,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
-            'mugshot': user.mugshot.url,
         }
 
 
@@ -139,15 +163,23 @@ class FollowSerializer(serializers.ModelSerializer):
         model = Follow
         fields = (
             'user',
-            'content_type',
             'object_id',
             'flag',
             'started',
         )
         read_only_fields = (
+            'id',
             'user',
             'content_type',
             'object_id',
             'flag',
             'started',
         )
+
+    def create(self, validated_data):
+        reply_id = validated_data.get('object_pk')
+        reply_ctype = ContentType.objects.get_for_model(
+            Reply.objects.get(id=int(reply_id))
+        )
+        validated_data['content_type'] = reply_ctype
+        return super(FollowSerializer, self).create(validated_data)

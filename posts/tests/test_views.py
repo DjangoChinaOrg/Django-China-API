@@ -15,9 +15,9 @@ class PostTestCase(APITestCase):
                                              password='test',
                                              nickname='test')
         self.another_user = User.objects.create_user(username='test2',
-                                             email='test2@test.com',
-                                             password='test2',
-                                             nickname='test2')
+                                                     email='test2@test.com',
+                                                     password='test2',
+                                                     nickname='test2')
         self.admin = User.objects.create_superuser(username='admin',
                                                    email='admin@admin.com',
                                                    password='admin123',
@@ -262,10 +262,11 @@ class PostTestCase(APITestCase):
 
         url = reverse('post-popular')
         response = self.client.get(url, format='json')
+        request = response.wsgi_request
         author = Post.objects.get(id=1).author
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['data'][0]['author']['id'], author.id)
-        self.assertEqual(response.data['data'][0]['author']['mugshot'], author.mugshot.url)
+        self.assertEqual(response.data['data'][0]['author']['mugshot'], request.build_absolute_uri(author.mugshot.url))
         self.assertEqual(response.data['data'][0]['author']['nickname'], author.nickname)
 
     def test_post_detail(self):

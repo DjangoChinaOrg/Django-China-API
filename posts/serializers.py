@@ -33,9 +33,11 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_author(self, obj):
         author = obj.author
+        request = self.context.get('request')
+        url = author.mugshot.url
         return {
             'id': author.id,
-            'mugshot': author.mugshot.url,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': author.nickname,
         }
 
@@ -50,7 +52,7 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
         返回最后一次评论的时间，
         如果没有评论，返回null
         """
-        reply_times = obj.replies.values_list('submit_date', flat=True).\
+        reply_times = obj.replies.values_list('submit_date', flat=True). \
             order_by('-submit_date')
         if reply_times:
             return reply_times[0]
@@ -75,9 +77,11 @@ class PopularPostSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_author(self, obj):
         author = obj.author
+        request = self.context.get('request')
+        url = author.mugshot.url
         return {
             'id': author.id,
-            'mugshot': author.mugshot.url,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': author.nickname,
         }
 
