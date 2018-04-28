@@ -25,10 +25,12 @@ class LoginViewCustom(LoginView):
     authentication_classes = ()
 
 
-class UserViewSets(viewsets.GenericViewSet):
+class UserViewSets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
+    # TODO: 用户的email等隐私信息需要特殊处理
     permission_classes = [AllowAny, ]
     serializer_class = UserDetailsSerializer
+    lookup_value_regex = '[0-9]+'
 
     @action(methods=['get'], detail=True, serializer_class=FlatReplySerializer)
     def replies(self, request, pk=None):

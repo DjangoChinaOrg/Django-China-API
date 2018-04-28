@@ -19,6 +19,7 @@ class FlatReplySerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = (
+            'id',
             'user',
             'parent_user',
             'post',
@@ -79,6 +80,7 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
             'parent_user',
         )
         read_only_fields = (
+            'id',
             'submit_date',
             'ip_address',
             'is_public',
@@ -130,6 +132,7 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = (
+            'id',
             'content_type',
             'object_pk',
             'comment',
@@ -165,6 +168,7 @@ class FollowSerializer(serializers.ModelSerializer):
             'started',
         )
         read_only_fields = (
+            'id',
             'user',
             'content_type',
             'object_id',
