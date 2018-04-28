@@ -17,13 +17,12 @@ class PostSerializerTests(TestCase):
                                              password='test',
                                              nickname='test')
         self.tag1 = Tag.objects.create(name='test_tag',
-                                      creator=self.user)
+                                       creator=self.user)
         self.tag2 = Tag.objects.create(name='another test_tag',
                                        creator=self.user)
         self.post = Post.objects.create(title='test title first',
-                                         body='first test body',
-                                         author=self.user
-                                         )
+                                        body='first test body',
+                                        author=self.user)
         self.post.tags.add(self.tag1)
         self.post.tags.add(self.tag2)
 

@@ -8,7 +8,8 @@ from replies.models import Reply
 
 class PublicManager(models.Manager):
     def get_queryset(self):
-        return super(PublicManager, self).get_queryset().filter(hidden=False).order_by('-created_time')
+        return super(PublicManager, self)\
+            .get_queryset().filter(hidden=False).order_by('-created_time')
 
 
 class Post(TimeStampedModel):
@@ -19,9 +20,17 @@ class Post(TimeStampedModel):
     highlighted = models.BooleanField("加精", default=False)
     hidden = models.BooleanField("隐藏", default=False)
     tags = models.ManyToManyField('tags.Tag', verbose_name="标签")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="作者", on_delete=models.CASCADE)
-    replies = GenericRelation(Reply, object_id_field='object_pk', content_type_field='content_type',
-                              verbose_name="回复")
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="作者",
+        on_delete=models.CASCADE
+    )
+    replies = GenericRelation(
+        Reply,
+        object_id_field='object_pk',
+        content_type_field='content_type',
+        verbose_name="回复"
+    )
 
     objects = models.Manager()
     # 未隐藏的帖子

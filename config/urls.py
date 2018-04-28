@@ -32,7 +32,7 @@ router.register(r'posts', PostViewSet)
 router.register(r'tags', TagViewSet)
 router.register(r'replies', ReplyViewSet)
 router.register(r'users', UserViewSets)
-router.register(r'users/email', EmailAddressViewSet,base_name='email')
+router.register(r'users/email', EmailAddressViewSet, base_name='email')
 router.register(r'notifications', NotificationViewSet, base_name='notifications')
 
 urlpatterns = [

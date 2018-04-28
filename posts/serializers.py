@@ -1,11 +1,13 @@
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Prefetch
 from rest_framework import serializers
 
 from tags.serializers import TagSerializer
-from .models import Post
+from utils.mixins import EagerLoaderMixin
+from .models import Post, Reply
 
 
-class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
+class IndexPostListSerializer(serializers.HyperlinkedModelSerializer, EagerLoaderMixin):
     """
     首页帖子列表序列化器
     """
@@ -13,6 +15,12 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
     reply_count = serializers.SerializerMethodField()
     tags = TagSerializer(many=True, read_only=True)
     latest_reply_time = serializers.SerializerMethodField()
+
+    SELECT_RELATED_FIELDS = ['author']
+    PREFETCH_RELATED_FIELDS = [
+        'tags',
+        Prefetch('replies', queryset=Reply.objects.order_by('-submit_date'))
+    ]
 
     class Meta:
         model = Post
@@ -52,19 +60,20 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer):
         返回最后一次评论的时间，
         如果没有评论，返回null
         """
-        reply_times = obj.replies.values_list('submit_date', flat=True). \
-            order_by('-submit_date')
-        if reply_times:
-            return reply_times[0]
+        replies = obj.replies.all()
+        if replies:
+            return replies[0].submit_date
         else:
             return None
 
 
-class PopularPostSerializer(serializers.HyperlinkedModelSerializer):
+class PopularPostSerializer(serializers.HyperlinkedModelSerializer, EagerLoaderMixin):
     """
     热门帖子序列化器
     """
     author = serializers.SerializerMethodField()
+
+    SELECT_RELATED_FIELDS = ['author']
 
     class Meta:
         model = Post

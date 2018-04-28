@@ -79,26 +79,20 @@ class TagTests(APITestCase):
         测试热门标签
         """
         self.post1 = Post.objects.create(title='this is a test1',
-                                        body='this is a test',
-                                        author=self.admin
-                                        )
+                                         body='this is a test',
+                                         author=self.admin)
         self.post2 = Post.objects.create(title='this is a test2',
-                                        body='this is a test',
-                                        author=self.admin
-                                        )
+                                         body='this is a test',
+                                         author=self.admin)
         self.post3 = Post.objects.create(title='this is a test3',
                                          body='this is a test',
-                                         author=self.admin
-                                         )
+                                         author=self.admin)
         self.tag1 = Tag.objects.create(name='test tag1',
-                                      creator=self.admin
-                                      )
+                                       creator=self.admin)
         self.tag2 = Tag.objects.create(name='test tag2',
-                                      creator=self.admin
-                                      )
+                                       creator=self.admin)
         self.tag3 = Tag.objects.create(name='test tag3',
-                                      creator=self.admin
-                                      )
+                                       creator=self.admin)
         self.post1.tags.add(self.tag1, self.tag2)
         self.post2.tags.add(self.tag2, self.tag3, self.tag1)
         self.post3.tags.add(self.tag2)
