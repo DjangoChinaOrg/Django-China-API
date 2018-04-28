@@ -2,7 +2,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Prefetch
 from rest_framework import serializers
 
-from replies.serializers import TreeRepliesSerializer
 from tags.serializers import TagSerializer
 from utils.mixins import EagerLoaderMixin
 from .models import Post, Reply
@@ -42,9 +41,11 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer, EagerLoade
 
     def get_author(self, obj):
         author = obj.author
+        request = self.context.get('request')
+        url = author.mugshot.url
         return {
             'id': author.id,
-            'mugshot': author.mugshot.url,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': author.nickname,
         }
 
@@ -85,9 +86,11 @@ class PopularPostSerializer(serializers.HyperlinkedModelSerializer, EagerLoaderM
 
     def get_author(self, obj):
         author = obj.author
+        request = self.context.get('request')
+        url = author.mugshot.url
         return {
             'id': author.id,
-            'mugshot': author.mugshot.url,
+            'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': author.nickname,
         }
 
@@ -123,21 +126,8 @@ class PostDetailSerializer(IndexPostListSerializer):
         content_type = ContentType.objects.get_for_model(obj)
         return content_type.id
 
-    def get_replies(self, obj):
-        """
-        返回帖子下的回复
-        """
-        replies = obj.replies.filter(parent__isnull=True)
-        serializer = TreeRepliesSerializer(replies, many=True)
-        return serializer.data
-
     def get_participants_count(self, obj):
         """
         返回评论参与者数量
         """
-        user_list = []
-        replies = obj.replies.all()
-        for reply in replies:
-            if reply.user not in user_list:
-                user_list.append(reply.user)
-        return len(user_list)
+        return obj.replies.values_list('user', flat=True).distinct().count()

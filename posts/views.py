@@ -149,6 +149,7 @@ class PostViewSet(viewsets.ModelViewSet):
         )
 
         # return paginated queryset as response data if paginator exists
+        self.paginator.page_size = 10
         page = self.paginate_queryset(popular_posts)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -163,8 +164,8 @@ class PostViewSet(viewsets.ModelViewSet):
         replies = post.replies.filter(is_public=True, is_removed=False)
         page = self.paginate_queryset(replies)
         if page is not None:
-            serializer = self.get_serializer(page, many=True)
+            serializer = self.get_serializer(page, many=True, context={'request': request})
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(replies, many=True)
+        serializer = self.get_serializer(replies, many=True, context={'request': request})
         return Response(serializer.data)
