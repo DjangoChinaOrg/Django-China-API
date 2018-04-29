@@ -15,9 +15,9 @@ class PostTestCase(APITestCase):
                                              password='test',
                                              nickname='test')
         self.another_user = User.objects.create_user(username='test2',
-                                             email='test2@test.com',
-                                             password='test2',
-                                             nickname='test2')
+                                                     email='test2@test.com',
+                                                     password='test2',
+                                                     nickname='test2')
         self.admin = User.objects.create_superuser(username='admin',
                                                    email='admin@admin.com',
                                                    password='admin123',
@@ -231,6 +231,43 @@ class PostTestCase(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 21)
+
+    def test_popular_post_list(self):
+        """
+        测试热门帖子
+        """
+        for i in range(5):
+            self.post = Post.objects.create(title='this is a test',
+                                            body='this is a test',
+                                            author=self.user
+                                            )
+            self.post.tags.add(self.tag1)
+        url = reverse('post-popular')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+        self.assertEqual(response.data['page_size'], 10)
+
+        url = reverse('reply-list')
+        self.client.login(username='admin', password='admin123')
+        data = {
+            "content_type": 19,
+            "object_pk": "1",
+            "site": 1,
+            "comment": "回复测试",
+            "parent": None
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url = reverse('post-popular')
+        response = self.client.get(url, format='json')
+        request = response.wsgi_request
+        author = Post.objects.get(id=1).author
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(response.data['data'][0]['author']['id'], author.id)
+        self.assertEqual(response.data['data'][0]['author']['mugshot'], request.build_absolute_uri(author.mugshot.url))
+        self.assertEqual(response.data['data'][0]['author']['nickname'], author.nickname)
 
     def test_post_detail(self):
         """

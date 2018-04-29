@@ -58,9 +58,7 @@ class ReplyViewSetsTestCase(test.APITestCase):
     def test_authenticated_user_can_create_reply(self):
         url = reverse('reply-list')
         data = {
-            "content_type": self.post_ct.id,
             "object_pk": self.post_id,
-            "site": 1,
             "comment": "test comment",
         }
         self.client.login(username='test', password='test')
@@ -76,9 +74,7 @@ class ReplyViewSetsTestCase(test.APITestCase):
     def test_can_create_child_reply(self):
         url = reverse('reply-list')
         data = {
-            "content_type": self.post_ct.id,
             "object_pk": self.post_id,
-            "site": 1,
             "comment": "test comment",
             "parent": self.reply.id,
         }
@@ -96,13 +92,8 @@ class ReplyViewSetsTestCase(test.APITestCase):
     def test_reply_only_support_post_method(self):
         url = reverse('reply-list')
         data = {
-            "content_type": self.post_ct.id,
             "object_pk": self.post_id,
-            "site": 1,
             "comment": "test comment",
-            # "submit_date": None,
-            # "ip_address": None,
-            # "parent": None,
         }
         self.client.login(username='test', password='test')
 
@@ -121,7 +112,6 @@ class ReplyViewSetsTestCase(test.APITestCase):
     def test_anonymous_user_can_not_like_reply(self):
         url = reverse('reply-like', kwargs={'pk': self.reply.id})
         data = {
-            "content_type": self.reply.ctype_id,
             "object_id": self.reply.id,
             "flag": "like",
         }
@@ -131,7 +121,6 @@ class ReplyViewSetsTestCase(test.APITestCase):
     def test_user_can_not_like_self_reply(self):
         url = reverse('reply-like', kwargs={'pk': self.reply.id})
         data = {
-            "content_type": self.reply.ctype_id,
             "object_id": self.reply.id,
             "flag": "like",
         }
@@ -142,7 +131,6 @@ class ReplyViewSetsTestCase(test.APITestCase):
     def test_user_can_like_others_reply(self):
         url = reverse('reply-like', kwargs={'pk': self.reply.id})
         data = {
-            "content_type": self.reply.ctype_id,
             "object_id": self.reply.id,
             "flag": "like",
         }
@@ -161,7 +149,6 @@ class ReplyViewSetsTestCase(test.APITestCase):
     def test_user_can_not_like_same_reply_twice(self):
         url = reverse('reply-like', kwargs={'pk': self.reply.id})
         data = {
-            "content_type": self.reply.ctype_id,
             "object_id": self.reply.id,
             "flag": "like",
         }
@@ -173,7 +160,8 @@ class ReplyViewSetsTestCase(test.APITestCase):
 
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # An error occurred in the current transaction. You can't execute queries until the end of the 'atomic' block.
+        # An error occurred in the current transaction.
+        # You can't execute queries until the end of the 'atomic' block.
         # 暂时不知道如何解决
         # self.assertEqual(Follow.objects.count(), 1)
 
@@ -184,7 +172,6 @@ class ReplyViewSetsTestCase(test.APITestCase):
     def test_user_can_delete_self_like(self):
         url = reverse('reply-like', kwargs={'pk': self.reply.id})
         data = {
-            "content_type": self.reply.ctype_id,
             "object_id": self.reply.id,
             "flag": "like",
         }
@@ -200,7 +187,6 @@ class ReplyViewSetsTestCase(test.APITestCase):
     def test_like_only_support_post_delete_methods(self):
         url = reverse('reply-like', kwargs={'pk': self.reply.id})
         data = {
-            "content_type": self.reply.ctype_id,
             "object_id": self.reply.id,
             "flag": "like",
         }

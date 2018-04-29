@@ -19,9 +19,13 @@ from .serializers import (
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.public.annotate(
-        latest_reply_time=Max('replies__submit_date')
-    ).order_by('-pinned', '-latest_reply_time', '-created')
+    queryset = IndexPostListSerializer.setup_eager_loading(
+        Post.public.annotate(
+            latest_reply_time=Max('replies__submit_date')
+        ).order_by('-pinned', '-latest_reply_time', '-created'),
+        select_related=IndexPostListSerializer.SELECT_RELATED_FIELDS,
+        prefetch_related=IndexPostListSerializer.PREFETCH_RELATED_FIELDS
+    )
     serializer_class = IndexPostListSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsAdminAuthorOrReadOnly)
@@ -132,16 +136,20 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         返回48小时内评论次数最多的帖子
         """
-        popular_posts = Post.public.annotate(
-            num_replies=Count('replies'),
-            latest_reply_time=Max('replies__submit_date')
-        ).filter(
-            num_replies__gt=0,
-            latest_reply_time__gt=(now() - datetime.timedelta(days=2)),
-            latest_reply_time__lt=now()
-        ).order_by('-num_replies', '-latest_reply_time')[:10]
+        popular_posts = PopularPostSerializer.setup_eager_loading(
+            Post.public.annotate(
+                num_replies=Count('replies'),
+                latest_reply_time=Max('replies__submit_date')
+            ).filter(
+                num_replies__gt=0,
+                latest_reply_time__gt=(now() - datetime.timedelta(days=2)),
+                latest_reply_time__lt=now()
+            ).order_by('-num_replies', '-latest_reply_time')[:10],
+            select_related=PopularPostSerializer.SELECT_RELATED_FIELDS
+        )
 
         # return paginated queryset as response data if paginator exists
+        self.paginator.page_size = 10
         page = self.paginate_queryset(popular_posts)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -156,8 +164,8 @@ class PostViewSet(viewsets.ModelViewSet):
         replies = post.replies.filter(is_public=True, is_removed=False)
         page = self.paginate_queryset(replies)
         if page is not None:
-            serializer = self.get_serializer(page, many=True)
+            serializer = self.get_serializer(page, many=True, context={'request': request})
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(replies, many=True)
+        serializer = self.get_serializer(replies, many=True, context={'request': request})
         return Response(serializer.data)

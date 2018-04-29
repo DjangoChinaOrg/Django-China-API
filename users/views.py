@@ -51,10 +51,12 @@ class GitHubConnect(SocialConnectView):
     adapter_class = GitHubOAuth2Adapter
 
 
-class UserViewSets(viewsets.GenericViewSet):
+class UserViewSets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
+    # TODO: 用户的email等隐私信息需要特殊处理
     permission_classes = [AllowAny, ]
     serializer_class = UserDetailsSerializer
+    lookup_value_regex = '[0-9]+'
 
     @action(methods=['get'], detail=True, serializer_class=FlatReplySerializer)
     def replies(self, request, pk=None):
@@ -62,10 +64,10 @@ class UserViewSets(viewsets.GenericViewSet):
         replies = user.reply_comments.filter(is_public=True, is_removed=False)
         page = self.paginate_queryset(replies)
         if page is not None:
-            serializer = self.get_serializer(page, many=True)
+            serializer = self.get_serializer(page, many=True, context={'request': request})
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(replies, many=True)
+        serializer = self.get_serializer(replies, many=True, context={'request': request})
         return Response(serializer.data)
 
     @action(methods=['get'], detail=True, serializer_class=IndexPostListSerializer)
@@ -84,14 +86,22 @@ class UserViewSets(viewsets.GenericViewSet):
                 serializer = self.get_serializer(page, many=True, context={'request': request})
                 return self.get_paginated_response(serializer.data)
 
-            serializer = self.get_serializer(posts.filter(hidden=True), many=True, context={'request': request})
+            serializer = self.get_serializer(
+                posts.filter(hidden=True),
+                many=True,
+                context={'request': request}
+            )
             return Response(serializer.data)
 
         page = self.paginate_queryset(posts.filter(hidden=False))
         if page is not None:
             serializer = self.get_serializer(page, many=True, context={'request': request})
             return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(posts.filter(hidden=False), many=True, context={'request': request})
+        serializer = self.get_serializer(
+            posts.filter(hidden=False),
+            many=True,
+            context={'request': request}
+        )
         return Response(serializer.data)
 
     @action(

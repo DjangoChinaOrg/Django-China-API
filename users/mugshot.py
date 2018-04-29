@@ -61,8 +61,9 @@ class Avatar(object):
         """
             Create a pastel colour hex colour string
         """
-        r = lambda: random.randint(0, 128) + 127
-        return (r(), r(), r())  # return rgb values as a tuple
+        def r():
+            return random.randint(0, 128) + 127
+        return r(), r(), r()  # return rgb values as a tuple
 
     def _luminance(self, rgb):
         """

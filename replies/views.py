@@ -53,7 +53,7 @@ class ReplyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                     {'detail': '已经赞过'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            serializer = FollowSerializer(follow)
+            serializer = FollowSerializer(follow, context={'request': request})
             # 创建相应的 notification
             data = {
                 'recipient': reply.user,

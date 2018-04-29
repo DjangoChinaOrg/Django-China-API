@@ -17,7 +17,12 @@ class User(AbstractUser):
     """
     用户模型定义
     """
-    last_login_ip = models.GenericIPAddressField("最近一次登陆IP", unpack_ipv4=True, blank=True, null=True)
+    last_login_ip = models.GenericIPAddressField(
+        "最近一次登陆IP",
+        unpack_ipv4=True,
+        blank=True,
+        null=True
+    )
     ip_joined = models.GenericIPAddressField("注册IP", unpack_ipv4=True, blank=True, null=True)
 
     nickname = models.CharField("昵称", max_length=50, unique=True)
