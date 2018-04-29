@@ -1,8 +1,12 @@
 import math
 import random
 
+from django.conf import settings
 from django.db.models import Sum
-from rest_auth.registration.views import LoginView
+from allauth.account.views import ConfirmEmailView as AllAuthConfirmEmailView
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from rest_auth.registration.views import LoginView, SocialLoginView, SocialConnectView, RegisterView
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -18,11 +22,33 @@ from .permissions import IsVerified, NotPrimary
 from .serializers import EmailAddressSerializer, UserDetailsSerializer
 
 
+class RegisterViewCustom(RegisterView):
+    """
+    注册视图取消authentication_class一次避免CSRF校验
+    """
+    authentication_classes = ()
+
+
 class LoginViewCustom(LoginView):
     """
     登陆视图取消authentication_class以此避免CSRF校验
     """
     authentication_classes = ()
+
+
+class ConfirmEmailView(AllAuthConfirmEmailView):
+    template_name = 'account/email_confirm.html'
+
+
+class GitHubLogin(SocialLoginView):
+    authentication_classes = ()
+    adapter_class = GitHubOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = getattr(settings, 'SOCIAL_LOGIN_GITHUB_CALLBACK_URL')
+
+
+class GitHubConnect(SocialConnectView):
+    adapter_class = GitHubOAuth2Adapter
 
 
 class UserViewSets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
