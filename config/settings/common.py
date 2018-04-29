@@ -180,8 +180,8 @@ AUTHENTICATION_BACKENDS = (
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserDetailsSerializer',
 }
-SOCIAL_LOGIN_GOOGLE_CALLBACK_URL = os.environ.get(
-    'SOCIAL_LOGIN_GOOGLE_CALLBACK_URL',
+SOCIAL_LOGIN_GITHUB_CALLBACK_URL = os.environ.get(
+    'SOCIAL_LOGIN_GITHUB_CALLBACK_URL',
     'http://localhost:8000/social-auth/github/loginsuccess'
 )
 

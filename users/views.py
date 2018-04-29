@@ -44,7 +44,7 @@ class GitHubLogin(SocialLoginView):
     authentication_classes = ()
     adapter_class = GitHubOAuth2Adapter
     client_class = OAuth2Client
-    callback_url = getattr(settings, 'SOCIAL_LOGIN_GOOGLE_CALLBACK_URL')
+    callback_url = getattr(settings, 'SOCIAL_LOGIN_GITHUB_CALLBACK_URL')
 
 
 class GitHubConnect(SocialConnectView):
