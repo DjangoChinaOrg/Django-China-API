@@ -192,6 +192,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=60 * 30),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+    'JWT_ALLOW_REFRESH': True,
 }
 
 if DEBUG:
