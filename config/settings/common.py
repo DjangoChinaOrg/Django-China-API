@@ -179,6 +179,10 @@ AUTHENTICATION_BACKENDS = (
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserDetailsSerializer',
 }
+SOCIAL_LOGIN_GITHUB_CALLBACK_URL = os.environ.get(
+    'SOCIAL_LOGIN_GITHUB_CALLBACK_URL',
+    'http://localhost:8000/social-auth/github/loginsuccess'
+)
 
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'users.serializers.UserRegistrationSerializer',
@@ -188,6 +192,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=60 * 30),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+    'JWT_ALLOW_REFRESH': True,
 }
 
 if DEBUG:
