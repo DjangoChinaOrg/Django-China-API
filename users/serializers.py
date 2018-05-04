@@ -88,3 +88,18 @@ class EmailAddressSerializer(serializers.ModelSerializer):
             'primary',
         )
         read_only_fields = ('user', 'verified', 'primary')
+
+
+class UserSimpleDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        read_only_fields = (
+            'id',
+            'username',
+            'nickname',
+        )
+        fields = (
+            'id',
+            'username',
+            'nickname',
+        )

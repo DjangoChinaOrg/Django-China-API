@@ -30,9 +30,6 @@ class NotificationViewSet(mixins.RetrieveModelMixin,
         instance.deleted = True
         instance.save()
 
-    def perform_update(self, serializer):
-        serializer.update()
-
     def update(self, request, *args, **kwargs):
         pk = self.kwargs['pk']
         instance = Notification.objects.get(id=pk)
