@@ -69,6 +69,7 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = (
+            'id',
             'object_pk',
             'comment',
             'parent',
@@ -162,7 +163,9 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = (
+            'id',
             'user',
+            'content_type',
             'object_id',
             'flag',
             'started',
