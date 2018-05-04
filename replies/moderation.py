@@ -22,7 +22,8 @@ class ReplyModerator(CommentModerator):
                 reply_data = {
                     'recipient': parent_user,
                     'verb': 'respond',
-                    'target': reply,
+                    'action_object': reply,
+                    'target': content_object,
                 }
                 notify.send(sender=reply.user, **reply_data)
 
@@ -31,7 +32,8 @@ class ReplyModerator(CommentModerator):
                 comment_data = {
                     'recipient': post_author,
                     'verb': 'reply',
-                    'target': reply,
+                    'action_object': reply,
+                    'target': content_object,
                 }
                 notify.send(sender=reply.user, **comment_data)
         else:
@@ -40,7 +42,8 @@ class ReplyModerator(CommentModerator):
                 comment_data = {
                     'recipient': post_author,
                     'verb': 'reply',
-                    'target': reply,
+                    'action_object': reply,
+                    'target': content_object,
                 }
                 notify.send(sender=reply.user, **comment_data)
 

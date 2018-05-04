@@ -58,6 +58,8 @@ class ReplyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             data = {
                 'recipient': reply.user,
                 'verb': 'like',
+                'action_object': reply.content_object,
+                'target': reply
             }
             notify.send(sender=self.request.user, **data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
