@@ -15,6 +15,7 @@ class FlatReplySerializer(serializers.ModelSerializer):
     post = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
     parent_user = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Reply
@@ -26,6 +27,7 @@ class FlatReplySerializer(serializers.ModelSerializer):
             'submit_date',
             'comment',
             'like_count',
+            'is_liked',
         )
 
     def get_post(self, obj):
@@ -57,6 +59,10 @@ class FlatReplySerializer(serializers.ModelSerializer):
             'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
         }
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        return Follow.objects.is_following(request.user, obj, flag='like')
 
 
 class ReplyCreationSerializer(serializers.ModelSerializer):
@@ -129,6 +135,7 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
     """
     descendants = FlatReplySerializer(many=True)
     user = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Reply
@@ -142,7 +149,12 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
             'user',
             'descendants',
             'descendants_count',
+            'is_liked'
         )
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        return Follow.objects.is_following(request.user, obj, flag='like')
 
     def get_user(self, obj):
         user = obj.user
