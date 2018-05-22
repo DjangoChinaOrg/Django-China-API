@@ -54,7 +54,11 @@ class GitHubConnect(SocialConnectView):
     adapter_class = GitHubOAuth2Adapter
 
 
-class UserViewSets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class UserViewSets(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet
+):
     queryset = User.objects.all()
     # TODO: 用户的email等隐私信息需要特殊处理
     permission_classes = [AllowAny, ]

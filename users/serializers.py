@@ -82,12 +82,13 @@ class EmailAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailAddress
         fields = (
+            'id',
             'user',
             'email',
             'verified',
             'primary',
         )
-        read_only_fields = ('user', 'verified', 'primary')
+        read_only_fields = ('id', 'user', 'verified', 'primary')
 
 
 class UserSimpleDetailsSerializer(serializers.ModelSerializer):
