@@ -1,12 +1,14 @@
 import math
 import random
 
-from django.conf import settings
-from django.db.models import Sum
 from allauth.account.views import ConfirmEmailView as AllAuthConfirmEmailView
 from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from rest_auth.registration.views import LoginView, SocialLoginView, SocialConnectView, RegisterView
+from django.conf import settings
+from django.db.models import Sum
+from django.utils import timezone
+from rest_auth.registration.views import (
+    LoginView, RegisterView, SocialConnectView, SocialLoginView)
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -17,6 +19,7 @@ from balance.permissions import IsCurrentUser, OncePerDay
 from balance.serializers import BalanceSerializer
 from posts.serializers import IndexPostListSerializer
 from replies.serializers import FlatReplySerializer
+
 from .models import User
 from .permissions import IsVerified, NotPrimary
 from .serializers import EmailAddressSerializer, UserDetailsSerializer
@@ -134,6 +137,15 @@ class UserViewSets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         user = self.get_object()
         user_treasure = user.record_set.values('coin_type').annotate(Sum('amount'))
         return Response(user_treasure)
+
+    @action(methods=['get'], detail=True,
+            permission_classes=[permissions.IsAuthenticated, IsCurrentUser], )
+    def checked(self, request, pk=None):
+        user = self.get_object()
+        today_start = timezone.now().replace(hour=0, minute=0, second=0)
+        today_end = timezone.now().replace(hour=23, minute=59, second=59)
+        checked = user.record_set.filter(created_time__gt=today_start, created_time__lt=today_end).exists()
+        return Response({'checked': checked})
 
 
 class EmailAddressViewSet(mixins.ListModelMixin,
