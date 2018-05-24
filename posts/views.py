@@ -41,6 +41,8 @@ class PostViewSet(viewsets.ModelViewSet):
         而不是默认的IndexPostListSerializer
         """
         instance = self.get_object()
+        instance.increase_views()
+        instance.refresh_from_db()
         serializer = PostDetailSerializer(instance, context={'request': request})
         return Response(serializer.data)
 

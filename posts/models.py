@@ -8,7 +8,7 @@ from replies.models import Reply
 
 class PublicManager(models.Manager):
     def get_queryset(self):
-        return super(PublicManager, self)\
+        return super(PublicManager, self) \
             .get_queryset().filter(hidden=False).order_by('-created_time')
 
 
@@ -42,3 +42,7 @@ class Post(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+    def increase_views(self):
+        self.views += 1
+        self.save(update_fields=['views'])
