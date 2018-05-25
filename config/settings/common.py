@@ -209,3 +209,16 @@ OLD_PASSWORD_FIELD_ENABLED = True
 
 # 软删除
 NOTIFICATIONS_SOFT_DELETE = True
+
+# 邮件，开发用测试
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_USE_LOCALTIME = True
+EMAIL_HOST_USER = 'djangostudyteam@163.com'
+EMAIL_HOST_PASSWORD = os.environ['DJANGO_EMAIL_HOST_PASSWORD']
+
+# Default email address to use for various automated correspondence from the site manager(s).
+DEFAULT_FROM_EMAIL = 'Django中文社区 <%s>' % EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
