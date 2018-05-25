@@ -217,7 +217,7 @@ EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_USE_LOCALTIME = True
 EMAIL_HOST_USER = 'djangostudyteam@163.com'
-EMAIL_HOST_PASSWORD = os.environ['DJANGO_EMAIL_HOST_PASSWORD']
+EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_HOST_PASSWORD', 'fallback_value')
 
 # Default email address to use for various automated correspondence from the site manager(s).
 DEFAULT_FROM_EMAIL = 'Django中文社区 <%s>' % EMAIL_HOST_USER
