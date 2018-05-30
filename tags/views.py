@@ -3,9 +3,16 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from utils.rest_tools import CustomPageNumberPagination
+
 from .models import Tag
 from .permissions import TagPermissionOrReadOnly
 from .serializers import TagSerializer
+
+
+class TagPageNumberPagination(CustomPageNumberPagination):
+    page_size = 120
+    max_page_size = 120
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -13,6 +20,7 @@ class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
     permission_classes = (TagPermissionOrReadOnly,)
     http_method_names = ['get', 'post']
+    pagination_class = TagPageNumberPagination
 
     def perform_create(self, serializer):
         """

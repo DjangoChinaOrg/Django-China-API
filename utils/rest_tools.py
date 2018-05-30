@@ -53,6 +53,8 @@ class CustomPageNumberPagination(PageNumberPagination):
             ('page_size', self.page_size),
             ('current_page', self.page.number),
             ('last_page', self.page.paginator.num_pages),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
             ('count', self.page.paginator.count),
             ('data', data)
         ]))

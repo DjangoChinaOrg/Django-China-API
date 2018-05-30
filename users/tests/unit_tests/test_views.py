@@ -299,7 +299,7 @@ class EmailAddressViewSetTestCase(test.APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 5)
+        self.assertEqual(len(response.data), 7)
         self.assertTrue(
             all([ret['user'] == self.user.id for ret in response.data['data']])
         )
