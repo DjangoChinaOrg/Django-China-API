@@ -18,4 +18,4 @@ class NotificationFilter(django_filters.rest_framework.FilterSet):
 
     class Meta:
         model = Notification
-        fields = ['unread']
+        fields = ['unread', 'verb']
