@@ -9,8 +9,9 @@ from django.db.models import Sum
 from django.utils import timezone
 from rest_auth.registration.views import (
     LoginView, RegisterView, SocialConnectView, SocialLoginView)
-from rest_framework import mixins, permissions, status, viewsets
+from rest_framework import mixins, permissions, status, viewsets, views
 from rest_framework.decorators import action
+from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
@@ -154,6 +155,28 @@ class UserViewSets(
         return Response({'checked': checked})
 
 
+class MugshotUploadView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = (FileUploadParser,)
+
+    def post(self, request, filename):
+        if 'file' not in request.FILES:
+            return Response({
+                'file': 'No avatar file selected.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        file_obj = request.FILES['file']
+        limit_kb = 2048
+        if file_obj.size > limit_kb * 1024:
+            return Response({
+                'file': 'File size is too large.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user
+        user.mugshot.name
+        user.mugshot.save(filename, file_obj)
+        user.save()
+        return Response(status=204)
+
+
 class EmailAddressViewSet(mixins.ListModelMixin,
                           mixins.RetrieveModelMixin,
                           mixins.CreateModelMixin,
@@ -166,7 +189,7 @@ class EmailAddressViewSet(mixins.ListModelMixin,
         if self.action == 'destroy':
             return [permissions.IsAuthenticated(), NotPrimary()]
         else:
-            return super().get_permissions()
+            return super(EmailAddressViewSet, self).get_permissions()
 
     def get_queryset(self):
         return self.request.user.emailaddress_set.all()
