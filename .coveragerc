@@ -1,0 +1,5 @@
+[run]
+omit =
+    db_tools/*
+    manage.py
+    runtests.py

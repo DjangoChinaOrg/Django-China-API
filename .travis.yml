@@ -1,0 +1,23 @@
+language: python
+
+python:
+  - "3.5"
+
+install:
+  - pip install -r requirements/local.txt
+  - pip install coveralls
+
+env:
+  - DJANGO_SETTINGS_MODULE=config.settings.local
+
+script:
+  - python runtests.py
+  - coverage run --source=. manage.py test
+
+after_success:
+  - coveralls
+
+branches:
+  only:
+    - master
+    - dev
