@@ -252,7 +252,7 @@ class PostTestCase(APITestCase):
         self.client.login(username='admin', password='admin123')
         data = {
             "content_type": 19,
-            "object_pk": "1",
+            "object_pk": self.post.id,
             "site": 1,
             "comment": "回复测试",
             "parent": None
@@ -263,11 +263,13 @@ class PostTestCase(APITestCase):
         url = reverse('post-popular')
         response = self.client.get(url, format='json')
         request = response.wsgi_request
-        author = Post.objects.get(id=1).author
+        author = Post.objects.get(id=self.post.id).author
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['data'][0]['author']['id'], author.id)
-        self.assertEqual(response.data['data'][0]['author']['mugshot'], request.build_absolute_uri(author.mugshot.url))
-        self.assertEqual(response.data['data'][0]['author']['nickname'], author.nickname)
+        self.assertEqual(response.data['data'][0]['author']['mugshot'],
+                         request.build_absolute_uri(author.mugshot.url))
+        self.assertEqual(response.data['data'][0]
+                         ['author']['nickname'], author.nickname)
 
     def test_post_detail(self):
         """
@@ -281,7 +283,7 @@ class PostTestCase(APITestCase):
         url = reverse('post-detail', kwargs={'pk': self.post.pk})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['id'], 1)
+        self.assertEqual(response.data['id'], self.post.id)
         self.assertEqual(response.data['title'], 'this is a test')
         self.assertEqual(response.data['body'], 'this is a test')
         self.assertEqual(response.data['author']['nickname'], 'test')
