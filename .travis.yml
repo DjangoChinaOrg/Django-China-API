@@ -10,6 +10,9 @@ install:
 env:
   - DJANGO_SETTINGS_MODULE=config.settings.local
 
+services:
+  - mysql
+
 script:
   - python runtests.py
   - coverage run --source=. manage.py test
