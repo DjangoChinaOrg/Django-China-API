@@ -108,3 +108,5 @@ venv.bak/
 .idea/
 media/
 
+# vscode
+.vscode/

@@ -67,7 +67,8 @@ class UserViewSetTestCase(test.APITestCase):
         self.assertEqual(
             response.data['data'],
             FlatReplySerializer(
-                self.user.reply_comments.filter(is_public=True, is_removed=False),
+                self.user.reply_comments.filter(
+                    is_public=True, is_removed=False),
                 many=True, context={'request': response.wsgi_request}
             ).data
         )
@@ -220,11 +221,10 @@ class UserViewSetTestCase(test.APITestCase):
         url = reverse('user-balance', kwargs={'pk': self.user.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertListEqual(list(response.data), [
-            {'coin_type': 0, 'amount__sum': 35},
-            {'coin_type': 1, 'amount__sum': 45},
-            {'coin_type': 2, 'amount__sum': 35},
-        ])
+        balance_data = list(response.data)
+        self.assertTrue({'coin_type': 0, 'amount__sum': 35} in balance_data)
+        self.assertTrue({'coin_type': 1, 'amount__sum': 45} in balance_data)
+        self.assertTrue({'coin_type': 2, 'amount__sum': 35} in balance_data)
 
 
 class EmailAddressViewSetTestCase(test.APITestCase):
@@ -267,7 +267,8 @@ class EmailAddressViewSetTestCase(test.APITestCase):
     def test_anonymous_user_cannot_operate_email(self):
         list_url = reverse('email-list')
         retrieve_url = reverse('email-detail', kwargs={'pk': self.email.id})
-        set_primary_url = reverse('email-set-primary', kwargs={'pk': self.email.id})
+        set_primary_url = reverse(
+            'email-set-primary', kwargs={'pk': self.email.id})
         reverify_url = reverse('email-reverify', kwargs={'pk': self.email.id})
 
         response = self.client.get(list_url)
@@ -284,7 +285,8 @@ class EmailAddressViewSetTestCase(test.APITestCase):
         })
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-        response = self.client.delete(list_url, data={'email': self.user.email})
+        response = self.client.delete(
+            list_url, data={'email': self.user.email})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         response = self.client.post(set_primary_url)
@@ -305,7 +307,8 @@ class EmailAddressViewSetTestCase(test.APITestCase):
         )
 
     def test_user_cannnot_get_others_email(self):
-        url = reverse('email-detail', kwargs={'pk': self.another_user_email.id})
+        url = reverse('email-detail',
+                      kwargs={'pk': self.another_user_email.id})
         self.client.login(username='test', password='test')
         response = self.client.get(url)
 
@@ -324,7 +327,8 @@ class EmailAddressViewSetTestCase(test.APITestCase):
         self.assertEqual(self.user.emailaddress_set.count(), 3)
 
     def test_user_cannot_set_unverified_email_to_primary(self):
-        url = reverse('email-set-primary', kwargs={'pk': self.unverified_email.id})
+        url = reverse('email-set-primary',
+                      kwargs={'pk': self.unverified_email.id})
         self.client.login(username='test', password='test')
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -336,13 +340,15 @@ class EmailAddressViewSetTestCase(test.APITestCase):
             verified=True,
             primary=False
         )
-        url = reverse('email-set-primary', kwargs={'pk': verified_unprimary_email.id})
+        url = reverse('email-set-primary',
+                      kwargs={'pk': verified_unprimary_email.id})
         self.client.login(username='test', password='test')
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # 新的 primary email 设置成功
-        new_primary_email = EmailAddress.objects.get(pk=verified_unprimary_email.id)
+        new_primary_email = EmailAddress.objects.get(
+            pk=verified_unprimary_email.id)
         self.assertTrue(new_primary_email.primary)
 
         # 旧的 primary email 被设置为非 primary email
@@ -364,7 +370,8 @@ class EmailAddressViewSetTestCase(test.APITestCase):
         self.assertEqual(self.user.emailaddress_set.count(), 2)
 
     def test_user_cannot_delete_others_email(self):
-        url = reverse('email-detail', kwargs={'pk': self.another_user_email.id})
+        url = reverse('email-detail',
+                      kwargs={'pk': self.another_user_email.id})
         self.client.login(username='test', password='test')
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
