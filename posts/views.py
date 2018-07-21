@@ -1,6 +1,7 @@
 import datetime
 
 from django.db.models import Count, Max
+from django.db.models.functions import Coalesce
 from django.utils.timezone import now
 from django_filters import rest_framework as filters
 from rest_framework import permissions, serializers, status, viewsets
@@ -21,8 +22,8 @@ from .serializers import (
 class PostViewSet(viewsets.ModelViewSet):
     queryset = IndexPostListSerializer.setup_eager_loading(
         Post.public.annotate(
-            latest_reply_time=Max('replies__submit_date')
-        ).order_by('-pinned', '-latest_reply_time', '-created'),
+            latest_post_time=Coalesce(Max('replies__submit_date'), 'created')
+        ).order_by('-pinned', '-latest_post_time'),
         select_related=IndexPostListSerializer.SELECT_RELATED_FIELDS,
         prefetch_related=IndexPostListSerializer.PREFETCH_RELATED_FIELDS
     )
