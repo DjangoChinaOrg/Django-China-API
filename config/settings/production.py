@@ -1,47 +1,41 @@
-import os
-
-from .common import *
-
-DEBUG = False
-ALLOWED_HOSTS = ['*']
-
-SECRET_KEY = ''
-
-# envs
-MYSQL_HOST = os.getenv('MYSQL_PASSWORD')
-MYSQL_DB_NAME = os.getenv('MYSQL_MYSQL_DB_NAME')
-MYSQL_DB_USER = os.getenv('MYSQL_MYSQL_DB_USER')
-MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
-# sentry dsn
-RAVEN_CONFIG = {
-    'dsn': os.environ.get('SENTRY_DSN', ''),
-}
-
-
-# database
-DATABASES['default'].update(
-    {'HOST': MYSQL_HOST,
-     'NAME': MYSQL_DB_NAME,
-     'USER': MYSQL_DB_USER,
-     'PASSWORD': MYSQL_PASSWORD,
-     })
 from .common import *
 
 DEBUG = False
 ALLOWED_HOSTS = ['.dj-china.org', 'localhost', '127.0.0.1', '0.0.0.0']
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
-# 生产环境使用 MySQL
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['DJANGO_DATABASE_NAME'],
-        'USER': os.environ['DJANGO_DATABASE_USER'],
-        'PASSWORD': os.environ['DJANGO_DATABASE_PASSWORD'],
-        'HOST': 'localhost',
-        'PORT': 5432,
-    }
+# envs
+MYSQL_HOST = os.getenv('MYSQL_PASSWORD')
+MYSQL_DB_NAME = os.getenv('MYSQL_MYSQL_DB_NAME')
+MYSQL_DB_USER = os.getenv('MYSQL_MYSQL_DB_USER')
+MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
+
+# sentry dsn
+RAVEN_CONFIG = {
+    'dsn': os.environ.get('SENTRY_DSN', ''),
 }
+
+# 0: production
+# 1: local test
+local_test = os.environ.get('LOCAL_TEST', 0)
+
+if local_test:
+    DEBUG = True
+    # sqlite3
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'dev.sqlite3'),
+        }
+    }
+else:
+    # database
+    DATABASES['default'].update(
+        {'HOST': MYSQL_HOST,
+         'NAME': MYSQL_DB_NAME,
+         'USER': MYSQL_DB_USER,
+         'PASSWORD': MYSQL_PASSWORD,
+         })
 
 # 邮件配置，使用腾讯云企业邮箱
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
