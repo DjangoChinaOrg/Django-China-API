@@ -133,7 +133,7 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
     返回两层的 reply，第一层为根 reply，第二层为这个 reply 的所有子孙 reply。
     这个 Serializer 适合用于帖子详情页的 reply 列表。
     """
-    descendants = FlatReplySerializer(many=True)
+    descendants = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
 
@@ -165,6 +165,11 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
             'mugshot': request.build_absolute_uri(url) if request else url,
             'nickname': user.nickname,
         }
+
+    def get_descendants(self, obj):
+        qs = obj.descendants()
+        request = self.context.get('request')
+        return FlatReplySerializer(qs, many=True, context={'request': request}).data
 
 
 class FollowSerializer(serializers.ModelSerializer):
