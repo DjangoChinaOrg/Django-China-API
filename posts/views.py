@@ -164,7 +164,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], detail=True, serializer_class=TreeRepliesSerializer)
     def replies(self, request, pk=None):
         post = self.get_object()
-        replies = post.replies.filter(is_public=True, is_removed=False)
+        replies = post.replies.filter(is_public=True, is_removed=False, parent__isnull=True)
         page = self.paginate_queryset(replies)
         if page is not None:
             serializer = self.get_serializer(page, many=True, context={'request': request})

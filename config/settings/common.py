@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'actstream',
     'django_filters',
     'corsheaders',
+    'raven.contrib.django.raven_compat',  # sentry support
 
     # local apps
     'users',
