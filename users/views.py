@@ -5,11 +5,12 @@ from allauth.account.views import ConfirmEmailView as AllAuthConfirmEmailView
 from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django.db.models import Sum
 from django.utils import timezone
 from rest_auth.registration.views import (
     LoginView, RegisterView, SocialConnectView, SocialLoginView)
-from rest_framework import mixins, permissions, status, viewsets, views
+from rest_framework import mixins, permissions, status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import AllowAny
@@ -174,7 +175,7 @@ class MugshotUploadView(views.APIView):
         user.mugshot.name
         user.mugshot.save(filename, file_obj)
         user.save()
-        return Response(status=204)
+        return Response({'mugshot_url': user.mugshot.url}, status=200)
 
 
 class EmailAddressViewSet(mixins.ListModelMixin,
