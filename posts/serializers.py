@@ -43,9 +43,11 @@ class IndexPostListSerializer(serializers.HyperlinkedModelSerializer, EagerLoade
         author = obj.author
         request = self.context.get('request')
         url = author.mugshot.url
+        thumbnail_url = author.mugshot_thumbnail.url
         return {
             'id': author.id,
             'mugshot': request.build_absolute_uri(url) if request else url,
+            'mugshot_url': request.build_absolute_uri(thumbnail_url) if request else url,
             'nickname': author.nickname,
         }
 
@@ -88,9 +90,11 @@ class PopularPostSerializer(serializers.HyperlinkedModelSerializer, EagerLoaderM
         author = obj.author
         request = self.context.get('request')
         url = author.mugshot.url
+        thumbnail_url = author.mugshot_thumbnail.url
         return {
             'id': author.id,
             'mugshot': request.build_absolute_uri(url) if request else url,
+            'mugshot_url': request.build_absolute_uri(thumbnail_url) if request else url,
             'nickname': author.nickname,
         }
 

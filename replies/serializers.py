@@ -41,9 +41,11 @@ class FlatReplySerializer(serializers.ModelSerializer):
         user = obj.user
         request = self.context.get('request')
         url = user.mugshot.url
+        thumbnail_url = user.mugshot_thumbnail.url
         return {
             'id': user.id,
             'mugshot': request.build_absolute_uri(url) if request else url,
+            'mugshot_url': request.build_absolute_uri(thumbnail_url) if request else url,
             'nickname': user.nickname,
         }
 
@@ -54,9 +56,11 @@ class FlatReplySerializer(serializers.ModelSerializer):
         user = parent.user
         request = self.context.get('request')
         url = user.mugshot.url
+        thumbnail_url = user.mugshot_thumbnail.url
         return {
             'id': user.id,
             'mugshot': request.build_absolute_uri(url) if request else url,
+            'mugshot_url': request.build_absolute_uri(thumbnail_url) if request else url,
             'nickname': user.nickname,
         }
 
@@ -101,9 +105,11 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
         user = parent.user
         request = self.context.get('request')
         url = user.mugshot.url
+        thumbnail_url = user.mugshot_thumbnail.url
         return {
             'id': user.id,
             'mugshot': request.build_absolute_uri(url) if request else url,
+            'mugshot_url': request.build_absolute_uri(thumbnail_url) if request else url,
             'nickname': user.nickname,
         }
 
@@ -111,9 +117,11 @@ class ReplyCreationSerializer(serializers.ModelSerializer):
         user = obj.user
         request = self.context.get('request')
         url = user.mugshot.url
+        thumbnail_url = user.mugshot_thumbnail.url
         return {
             'id': user.id,
             'mugshot': request.build_absolute_uri(url) if request else url,
+            'mugshot_url': request.build_absolute_uri(thumbnail_url) if request else url,
             'nickname': user.nickname,
         }
 
@@ -160,9 +168,11 @@ class TreeRepliesSerializer(serializers.ModelSerializer):
         user = obj.user
         request = self.context.get('request')
         url = user.mugshot.url
+        thumbnail_url = user.mugshot_thumbnail.url
         return {
             'id': user.id,
             'mugshot': request.build_absolute_uri(url) if request else url,
+            'mugshot_url': request.build_absolute_uri(thumbnail_url) if request else url,
             'nickname': user.nickname,
         }
 

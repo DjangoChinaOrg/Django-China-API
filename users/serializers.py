@@ -8,14 +8,18 @@ from rest_framework.fields import CurrentUserDefault
 from .models import User
 from .utils import get_ip_address_from_request
 
+from .validators import FileValidator
+
 
 class UserDetailsSerializer(serializers.ModelSerializer):
     """
     用户详细信息的序列器
     """
-    mugshot_url = serializers.URLField(source='mugshot.url')
+    mugshot_url = serializers.SerializerMethodField(source='mugshot_thumbnail.url')
     post_count = serializers.SerializerMethodField()
     reply_count = serializers.SerializerMethodField()
+    mugshot = serializers.ImageField(
+        validators=[FileValidator(max_size=2 * 1024 * 1024, allowed_extensions=('png', 'jpg', 'jpeg'))])
 
     class Meta:
         model = User
@@ -34,6 +38,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'username',
             'nickname',
             'email',
+            'mugshot',
             'date_joined',
             'mugshot_url',
             'ip_joined',
@@ -49,6 +54,9 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         返回用户提交的帖子数量
         """
         return obj.post_set.count()
+
+    def get_mugshot_url(self, obj):
+        return obj.mugshot_thumbnail.url
 
     def get_reply_count(self, obj):
         """
