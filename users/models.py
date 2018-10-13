@@ -12,7 +12,9 @@ from .utils import get_ip_address_from_request
 def user_mugshot_path(instance, filename):
     return os.path.join('mugshots', instance.username, filename)
 
-
+from django.db import models
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 class User(AbstractUser):
     """
     用户模型定义
@@ -27,6 +29,10 @@ class User(AbstractUser):
 
     nickname = models.CharField("昵称", max_length=50, unique=True)
     mugshot = models.ImageField("头像", upload_to=user_mugshot_path)
+    mugshot_thumbnail = ImageSpecField(source='mugshot',
+                                      processors=[ResizeToFill(100, 100)],
+                                      format='JPEG',
+                                      options={'quality': 60})
 
     def __str__(self):
         return self.username
