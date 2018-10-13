@@ -70,6 +70,7 @@ class UserViewSets(
     lookup_value_regex = '[0-9]+'
 
     def get_permissions(self):
+        print(self.action)
         if self.action in ['update', 'partial_update']:
             return [permissions.IsAuthenticated(), IsCurrentUser()]
         return super().get_permissions()

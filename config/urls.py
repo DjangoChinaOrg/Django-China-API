@@ -50,7 +50,7 @@ router.register(r'notifications', NotificationViewSet, base_name='notifications'
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('allauth.urls')),
-    url(r'^users/mugshot/(?P<filename>[^/]+)$', MugshotUploadView.as_view()),
+    # url(r'^users/mugshot/(?P<filename>[^/]+)$', MugshotUploadView.as_view()),
     url(r'^rest-auth/login/$', LoginViewCustom.as_view(), name='rest_login'),
     url(r'^rest-auth/registration/$', RegisterViewCustom.as_view(), name='rest_register'),
     url(r'^rest-auth/registration/account-confirm-email/(?P<key>[-:\w]+)/$',
