@@ -104,39 +104,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-# sqlite3
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'dev.sqlite3'),
-#     }
-# }
-
-# mysql
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '3306',
-        'OPTIONS': {
-            'autocommit': True,
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'charset': 'utf8mb4',
-        },
-        'TEST': {
-            'NAME': 'django_test',
-            'CHARSET': 'utf8',
-            'COLLATION': 'utf8_general_ci',
-        }
-    }
-}
-
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -205,10 +172,6 @@ AUTHENTICATION_BACKENDS = (
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserDetailsSerializer',
 }
-SOCIAL_LOGIN_GITHUB_CALLBACK_URL = os.environ.get(
-    'SOCIAL_LOGIN_GITHUB_CALLBACK_URL',
-    'http://localhost:8000/social-auth/github/loginsuccess'
-)
 
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'users.serializers.UserRegistrationSerializer',
@@ -236,16 +199,4 @@ OLD_PASSWORD_FIELD_ENABLED = True
 # 软删除
 NOTIFICATIONS_SOFT_DELETE = True
 
-# 邮件，开发用测试
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.163.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_USE_LOCALTIME = True
-EMAIL_HOST_USER = 'djangostudyteam@163.com'
-EMAIL_HOST_PASSWORD = os.environ.get(
-    'DJANGO_EMAIL_HOST_PASSWORD', 'fallback_value')
-
-# Default email address to use for various automated correspondence from the site manager(s).
-DEFAULT_FROM_EMAIL = 'Django中文社区 <%s>' % EMAIL_HOST_USER
-SERVER_EMAIL = EMAIL_HOST_USER
+SOCIAL_LOGIN_GITHUB_CALLBACK_URL = 'dummy'
