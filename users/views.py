@@ -70,7 +70,6 @@ class UserViewSets(
     lookup_value_regex = '[0-9]+'
 
     def get_permissions(self):
-        print(self.action)
         if self.action in ['update', 'partial_update']:
             return [permissions.IsAuthenticated(), IsCurrentUser()]
         return super().get_permissions()
@@ -183,7 +182,6 @@ class MugshotUploadView(views.APIView):
         user.mugshot.save(filename, file_obj)
         user.save()
         user.refresh_from_db()
-        print(user.mugshot.size)
         return Response({'mugshot_url': user.mugshot.url}, status=200)
 
 
